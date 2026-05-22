@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ozone Next Impact — Inventory Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #1a1a2e;
+    --accent: #e94560;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #2c2c54;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+  }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* LOGIN */
+  #loginScreen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+  .login-box { background: var(--card); padding: 40px; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 380px; }
+  .login-box h1 { text-align: center; margin-bottom: 8px; color: var(--primary); }
+  .login-box .subtitle { text-align: center; color: var(--muted); margin-bottom: 24px; font-size: 13px; }
+  .login-box input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+  .login-box button { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .login-box button:hover { opacity: 0.9; }
+  .login-box button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .error-msg { color: var(--danger); font-size: 13px; margin-top: 10px; text-align: center; }
+
+  /* MAIN APP */
+  #app { display: none; }
+  .topbar { background: var(--primary); color: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  .topbar h2 { font-size: 18px; font-weight: 600; }
+  .topbar .user-info { display: flex; gap: 16px; align-items: center; font-size: 14px; }
+  .topbar button { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  .role-badge { background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 12px; font-size: 12px; }
+
+  .layout { display: flex; min-height: calc(100vh - 56px); }
+  .sidebar { width: 240px; background: white; padding: 20px 0; border-right: 1px solid var(--border); overflow-y: auto; }
+  .sidebar h3 { font-size: 11px; text-transform: uppercase; color: var(--muted); padding: 0 20px; margin-bottom: 8px; margin-top: 16px; letter-spacing: 0.5px; }
+  .nav-item { padding: 12px 20px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; transition: background 0.15s; }
+  .nav-item:hover { background: #f3f4f6; }
+  .nav-item.active { background: #fee2e7; color: var(--accent); font-weight: 600; border-left: 3px solid var(--accent); padding-left: 17px; }
+  .nav-item.hidden { display: none; }
+  .dashlet-toggle { padding: 8px 20px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .dashlet-toggle input { cursor: pointer; }
+  .dashlet-toggle label { cursor: pointer; user-select: none; }
+
+  .main { flex: 1; padding: 24px; overflow-y: auto; }
+  .view { display: none; }
+  .view.active { display: block; }
+  .view h1 { font-size: 22px; margin-bottom: 20px; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .kpi-card { background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-left: 4px solid var(--accent); }
+  .kpi-card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+  .kpi-card .value { font-size: 28px; font-weight: 700; margin-top: 4px; color: var(--primary); }
+
+  .dashlet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; }
+  .dashlet { background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .dashlet h3 { font-size: 14px; margin-bottom: 16px; color: var(--primary); }
+  .dashlet canvas { max-height: 280px; }
+  .dashlet.hidden { display: none; }
+
+  .table-wrap { background: var(--card); border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .table-toolbar { padding: 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .table-toolbar input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 4px; width: 240px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { background: #f9fafb; }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; }
+  td button { padding: 4px 10px; margin-right: 4px; border: none; border-radius: 3px; cursor: pointer; font-size: 12px; }
+  .btn-edit { background: #e0f2fe; color: #0369a1; }
+  .btn-del { background: #fee2e2; color: #dc2626; }
+  .btn-primary { background: var(--accent); color: white; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+  .btn-secondary { background: #e5e7eb; color: #374151; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+
+  .form-card { background: var(--card); padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); max-width: 800px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-field { display: flex; flex-direction: column; }
+  .form-field label { font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--muted); }
+  .form-field input, .form-field select, .form-field textarea { padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
+  .form-actions { margin-top: 20px; display: flex; gap: 10px; }
+
+  .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center; }
+  .modal-bg.active { display: flex; }
+  .modal { background: white; padding: 24px; border-radius: 8px; width: 560px; max-height: 90vh; overflow-y: auto; }
+  .modal h2 { margin-bottom: 16px; }
+
+  .checkbox-group { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: #fafafa; }
+  .checkbox-group label { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+
+  .loader { text-align: center; padding: 40px; color: var(--muted); }
+  .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge-success { background: #d1fae5; color: #065f46; }
+  .badge-warning { background: #fef3c7; color: #92400e; }
+  .badge-danger { background: #fee2e2; color: #991b1b; }
+  .badge-info { background: #dbeafe; color: #1e40af; }
+  .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 20px; background: var(--success); color: white; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 200; }
+  .toast.show { display: block; animation: slideIn 0.3s; }
+  .toast.error { background: var(--danger); }
+  @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .info-banner { background: #fef3c7; color: #92400e; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; border-left: 4px solid #f59e0b; }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>Ozone Next Impact</h1>
+    <p class="subtitle">Inventory Management Dashboard</p>
+    <input type="text" id="loginUser" placeholder="Username" />
+    <input type="password" id="loginPass" placeholder="Password" />
+    <button id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div class="error-msg" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app">
+  <div class="topbar">
+    <h2>Ozone Next Impact — Inventory Dashboard</h2>
+    <div class="user-info">
+      <span id="userName"></span>
+      <span class="role-badge" id="roleBadge"></span>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h3>Navigation</h3>
+      <div class="nav-item active" data-view="dashboard" data-sheet="">📊 Dashboard</div>
+      <div class="nav-item" data-view="entry" data-sheet="">➕ Data Entry</div>
+      <div class="nav-item" data-view="outer" data-sheet="Outer_Material">🧵 Outer Material</div>
+      <div class="nav-item" data-view="lining" data-sheet="Lining_Material">🪡 Lining Material</div>
+      <div class="nav-item" data-view="inventory" data-sheet="Inventory">📦 Inventory</div>
+      <div class="nav-item" data-view="colorDev" data-sheet="Color_Development">🎨 Color Development</div>
+      <div class="nav-item" data-view="zippers" data-sheet="Zippers">🤐 Zippers</div>
+      <div class="nav-item" data-view="users" data-sheet="USERS_ADMIN_ONLY">👥 Users</div>
+      <div class="nav-item" data-view="logs" data-sheet="LOGS_ADMIN_ONLY">📜 Activity Log</div>
+
+      <h3>Dashlets</h3>
+      <div class="dashlet-toggle"><input type="checkbox" id="dl-stock" checked onchange="toggleDashlet('stock', this.checked)"><label for="dl-stock">Stock by Category</label></div>
+      <div class="dashlet-toggle"><input type="checkbox" id="dl-color" checked onchange="toggleDashlet('color', this.checked)"><label for="dl-color">Color Demand</label></div>
+      <div class="dashlet-toggle"><input type="checkbox" id="dl-vendor" checked onchange="toggleDashlet('vendor', this.checked)"><label for="dl-vendor">Vendor Distribution</label></div>
+      <div class="dashlet-toggle"><input type="checkbox" id="dl-approval" checked onchange="toggleDashlet('approval', this.checked)"><label for="dl-approval">Approval Status</label></div>
+      <div class="dashlet-toggle"><input type="checkbox" id="dl-zipper" checked onchange="toggleDashlet('zipper', this.checked)"><label for="dl-zipper">Zipper Stock</label></div>
+      <div class="dashlet-toggle"><input type="checkbox" id="dl-lowstock" checked onchange="toggleDashlet('lowstock', this.checked)"><label for="dl-lowstock">Low Stock Alerts</label></div>
+    </aside>
+
+    <main class="main">
+      <section id="view-dashboard" class="view active">
+        <h1>Dashboard Overview</h1>
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="dashlet-grid" id="dashletGrid">
+          <div class="dashlet" id="dashlet-stock"><h3>Stock by Category</h3><canvas id="chart-stock"></canvas></div>
+          <div class="dashlet" id="dashlet-color"><h3>Top 10 Colors in Demand</h3><canvas id="chart-color"></canvas></div>
+          <div class="dashlet" id="dashlet-vendor"><h3>Inventory by Vendor</h3><canvas id="chart-vendor"></canvas></div>
+          <div class="dashlet" id="dashlet-approval"><h3>Color Development Status</h3><canvas id="chart-approval"></canvas></div>
+          <div class="dashlet" id="dashlet-zipper"><h3>Zipper Balance Material</h3><canvas id="chart-zipper"></canvas></div>
+          <div class="dashlet" id="dashlet-lowstock"><h3>Low Stock Alerts (Balance &lt; 50)</h3><div id="lowStockList" style="max-height:280px; overflow-y:auto;"></div></div>
+        </div>
+      </section>
+
+      <section id="view-entry" class="view">
+        <h1>Add New Entry</h1>
+        <div class="form-card">
+          <div class="form-field" style="margin-bottom:16px;">
+            <label>Select Category</label>
+            <select id="entryCategory" onchange="renderEntryForm()"><option value="">-- Choose --</option></select>
+          </div>
+          <div id="entryFormFields"></div>
+          <div class="form-actions" id="entryActions" style="display:none;">
+            <button class="btn-primary" onclick="submitEntry()">Save Entry</button>
+            <button class="btn-secondary" onclick="resetForm()">Clear</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-outer" class="view"><h1>Outer Material</h1><div id="table-Outer_Material"></div></section>
+      <section id="view-lining" class="view"><h1>Lining Material</h1><div id="table-Lining_Material"></div></section>
+      <section id="view-inventory" class="view"><h1>Inventory</h1><div id="table-Inventory"></div></section>
+      <section id="view-colorDev" class="view"><h1>Color Development</h1><div id="table-Color_Development"></div></section>
+      <section id="view-zippers" class="view"><h1>Zippers</h1><div id="table-Zippers"></div></section>
+
+      <section id="view-users" class="view">
+        <h1>User Management</h1>
+        <div class="info-banner">Only Super Admin can manage users. You can assign roles and choose exactly which views each user can access.</div>
+        <div style="margin-bottom:16px;"><button class="btn-primary" onclick="openUserModal()">+ Add New User</button></div>
+        <div id="usersTable"></div>
+      </section>
+
+      <section id="view-logs" class="view">
+        <h1>Activity Log</h1>
+        <div id="logsTable"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <h2 id="editModalTitle">Edit Row</h2>
+    <div id="editModalFields"></div>
+    <div class="form-actions">
+      <button class="btn-primary" onclick="saveEdit()">Save</button>
+      <button class="btn-secondary" onclick="closeModal('editModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<div class="modal-bg" id="userModal">
+  <div class="modal">
+    <h2 id="userModalTitle">Add User</h2>
+    <div class="form-field"><label>Username</label><input id="newUser" /></div>
+    <div class="form-field" style="margin-top:10px;"><label>Password <span id="passHint" style="font-weight:normal; color:var(--muted);"></span></label><input id="newPass" type="text" /></div>
+    <div class="form-field" style="margin-top:10px;">
+      <label>Role</label>
+      <select id="newRole" onchange="updateAccessHint()">
+        <option>Super Admin</option>
+        <option>Admin</option>
+        <option>Data Entry</option>
+        <option>Viewer</option>
+      </select>
+    </div>
+    <div class="form-field" style="margin-top:10px;">
+      <label>Allowed Views <span id="accessHint" style="font-weight:normal; color:var(--muted);"></span></label>
+      <div class="checkbox-group" id="viewsCheckboxes">
+        <label><input type="checkbox" value="ALL" id="cb-ALL" onchange="toggleAllViews(this)"> <strong>ALL Views</strong></label>
+        <label><input type="checkbox" value="Outer_Material" class="view-cb"> Outer Material</label>
+        <label><input type="checkbox" value="Lining_Material" class="view-cb"> Lining Material</label>
+        <label><input type="checkbox" value="Inventory" class="view-cb"> Inventory</label>
+        <label><input type="checkbox" value="Color_Development" class="view-cb"> Color Development</label>
+        <label><input type="checkbox" value="Zippers" class="view-cb"> Zippers</label>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" id="userSaveBtn" onclick="saveUser()">Add User</button>
+      <button class="btn-secondary" onclick="closeModal('userModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG — paste your deployed Apps Script Web App URL here
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw6HnwKHHO-NP2aVGCMGQWuCK0kOgcpeA4N2nn3YFvV4vMgT_8OXV_74XAc78deWN79/exec';
+
+const SCHEMAS = {
+  'Outer_Material':     ['Style_No', 'Style_Name', 'Item_Code', 'Thickness', 'Pattern', 'Color', 'Quantity', 'Date_Added'],
+  'Lining_Material':    ['Style_No', 'Style_Name', 'Lining_Item', 'GSM', 'Color', 'Quantity', 'Date_Added'],
+  'Inventory':          ['S_No', 'Material', 'Code', 'Colour_Name', 'Vendor', 'Thread_Code', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Date_Added'],
+  'Color_Development':  ['Code', 'Leather_Lining_Name', 'Coats_Code', 'Coats_Dev_Date', 'Coats_Status', 'Serafil_Code', 'Serafil_Dev_Date', 'Serafil_Status'],
+  'Zippers':            ['S_No', 'Zipper_Code', 'Approval_Status', 'Balance_Material', 'Vendor', 'Date_Added']
+};
+
+const VIEW_TO_SHEET = {
+  'outer': 'Outer_Material', 'lining': 'Lining_Material', 'inventory': 'Inventory',
+  'colorDev': 'Color_Development', 'zippers': 'Zippers'
+};
+
+const DATE_FIELDS = ['Date_Added', 'Coats_Dev_Date', 'Serafil_Dev_Date'];
+const NUM_FIELDS = ['Quantity', 'GSM', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Balance_Material', 'S_No'];
+
+let currentUser = null;
+let currentPerms = null;
+let credentials = { username: '', password: '' };
+let allData = {};
+let charts = {};
+let editContext = { sheet: null, rowIndex: null };
+let userEditContext = null;
+
+// ============================================================
+// API HELPER
+// ============================================================
+async function api(payload) {
+  payload.username = credentials.username;
+  payload.password = credentials.password;
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST', body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'text/plain' }
+  });
+  return await res.json();
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+async function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginError');
+  err.textContent = '';
+
+  if (!u || !p) { err.textContent = 'Enter username and password'; return; }
+  if (APPS_SCRIPT_URL.includes('PASTE_YOUR')) {
+    err.textContent = 'Configure APPS_SCRIPT_URL first.'; return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    credentials = { username: u, password: p };
+    const res = await api({ action: 'login' });
+    if (res.success) {
+      currentUser = res.user;
+      currentPerms = res.permissions;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('userName').textContent = currentUser.username;
+      document.getElementById('roleBadge').textContent = currentUser.role;
+      applyRoleUI();
+      await loadAllData();
+    } else {
+      credentials = { username: '', password: '' };
+      err.textContent = res.error || 'Login failed';
+    }
+  } catch (e) {
+    err.textContent = 'Network error: ' + e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+function logout() {
+  currentUser = null; currentPerms = null;
+  credentials = { username: '', password: '' };
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+// ============================================================
+// ROLE-BASED UI
+// ============================================================
+function hasViewAccess(sheetName) {
+  if (currentUser.role === 'Super Admin') return true;
+  const av = (currentUser.allowedViews || 'ALL').trim();
+  if (av === 'ALL') return true;
+  return av.split(',').map(s => s.trim()).indexOf(sheetName) !== -1;
+}
+
+function applyRoleUI() {
+  // Hide nav items based on role and view access
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const sheet = item.dataset.sheet;
+    if (sheet === 'USERS_ADMIN_ONLY' || sheet === 'LOGS_ADMIN_ONLY') {
+      item.classList.toggle('hidden', !currentPerms.manageUsers);
+    } else if (sheet && !hasViewAccess(sheet)) {
+      item.classList.add('hidden');
+    } else {
+      item.classList.remove('hidden');
+    }
+  });
+
+  // Hide Data Entry tab if user can't add
+  const entryNav = document.querySelector('.nav-item[data-view="entry"]');
+  if (entryNav) entryNav.classList.toggle('hidden', !currentPerms.add);
+
+  // Populate the entry form category dropdown with only allowed sheets
+  const sel = document.getElementById('entryCategory');
+  sel.innerHTML = '<option value="">-- Choose --</option>' +
+    Object.keys(SCHEMAS).filter(s => hasViewAccess(s)).map(s =>
+      `<option value="${s}">${s.replace(/_/g,' ')}</option>`
+    ).join('');
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if (item.classList.contains('hidden')) return;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    const view = item.dataset.view;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + view).classList.add('active');
+    if (view === 'logs') loadActivityLog();
+  });
+});
+
+// ============================================================
+// DATA LOADING
+// ============================================================
+async function loadAllData() {
+  toast('Loading data…');
+  const res = await api({ action: 'getAll' });
+  if (!res.success) { toast('Failed to load: ' + res.error, true); return; }
+  allData = res.data;
+  renderKPIs();
+  renderAllCharts();
+  Object.keys(SCHEMAS).forEach(s => renderTable(s));
+  if (currentPerms.manageUsers) await loadUsers();
+  toast('Data loaded');
+}
+
+// ============================================================
+// KPIs
+// ============================================================
+function renderKPIs() {
+  const grid = document.getElementById('kpiGrid');
+  const outer = allData['Outer_Material']?.rows || [];
+  const lining = allData['Lining_Material']?.rows || [];
+  const inv = allData['Inventory']?.rows || [];
+  const colorDev = allData['Color_Development']?.rows || [];
+  const zippers = allData['Zippers']?.rows || [];
+
+  const approved = colorDev.filter(r => {
+    const s = String(r.Coats_Status || '').toLowerCase();
+    return s.includes('approved') && !s.includes('not');
+  }).length;
+  const totalZipperStock = zippers.reduce((s, r) => s + (Number(r.Balance_Material) || 0), 0);
+
+  const kpis = [];
+  if (hasViewAccess('Outer_Material'))    kpis.push({ label: 'Outer Material Items', value: outer.length });
+  if (hasViewAccess('Lining_Material'))   kpis.push({ label: 'Lining Material Items', value: lining.length });
+  if (hasViewAccess('Inventory'))         kpis.push({ label: 'Inventory Records', value: inv.length });
+  if (hasViewAccess('Color_Development')) kpis.push({ label: 'Approved Colors', value: approved + ' / ' + colorDev.length });
+  if (hasViewAccess('Zippers'))           kpis.push({ label: 'Total Zipper Stock', value: totalZipperStock.toLocaleString() });
+
+  grid.innerHTML = kpis.map(k => `<div class="kpi-card"><div class="label">${k.label}</div><div class="value">${k.value}</div></div>`).join('');
+}
+
+// ============================================================
+// CHARTS
+// ============================================================
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+function renderAllCharts() {
+  renderStockChart(); renderColorChart(); renderVendorChart();
+  renderApprovalChart(); renderZipperChart(); renderLowStockList();
+
+  // Hide dashlets the user has no data for
+  if (!hasViewAccess('Color_Development')) document.getElementById('dashlet-approval').classList.add('hidden');
+  if (!hasViewAccess('Zippers')) {
+    document.getElementById('dashlet-zipper').classList.add('hidden');
+    document.getElementById('dashlet-lowstock').classList.add('hidden');
+  }
+}
+
+function renderStockChart() {
+  destroyChart('stock');
+  const counts = {};
+  if (hasViewAccess('Outer_Material'))    counts['Outer'] = (allData['Outer_Material']?.rows || []).length;
+  if (hasViewAccess('Lining_Material'))   counts['Lining'] = (allData['Lining_Material']?.rows || []).length;
+  if (hasViewAccess('Inventory'))         counts['Inventory'] = (allData['Inventory']?.rows || []).length;
+  if (hasViewAccess('Color_Development')) counts['Color Dev'] = (allData['Color_Development']?.rows || []).length;
+  if (hasViewAccess('Zippers'))           counts['Zippers'] = (allData['Zippers']?.rows || []).length;
+  charts.stock = new Chart(document.getElementById('chart-stock'), {
+    type: 'doughnut',
+    data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: ['#e94560','#f59e0b','#10b981','#3b82f6','#8b5cf6'] }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{ position:'right' } } }
+  });
+}
+
+function renderColorChart() {
+  destroyChart('color');
+  const colorCounts = {};
+  ['Outer_Material', 'Lining_Material'].forEach(s => {
+    if (!hasViewAccess(s)) return;
+    (allData[s]?.rows || []).forEach(r => {
+      const c = String(r.Color || '').trim();
+      if (c) colorCounts[c] = (colorCounts[c] || 0) + 1;
+    });
+  });
+  if (hasViewAccess('Inventory')) {
+    (allData['Inventory']?.rows || []).forEach(r => {
+      const c = String(r.Colour_Name || '').trim();
+      if (c) colorCounts[c] = (colorCounts[c] || 0) + 1;
+    });
+  }
+  const sorted = Object.entries(colorCounts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  charts.color = new Chart(document.getElementById('chart-color'), {
+    type: 'bar',
+    data: { labels: sorted.map(x => x[0]), datasets: [{ label: 'Frequency', data: sorted.map(x => x[1]), backgroundColor: '#e94560' }] },
+    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins:{ legend:{ display:false } } }
+  });
+}
+
+function renderVendorChart() {
+  destroyChart('vendor');
+  const vendors = {};
+  if (hasViewAccess('Inventory')) (allData['Inventory']?.rows || []).forEach(r => { const v = String(r.Vendor || 'Unknown').trim(); vendors[v] = (vendors[v] || 0) + 1; });
+  if (hasViewAccess('Zippers')) (allData['Zippers']?.rows || []).forEach(r => { const v = String(r.Vendor || 'Unknown').trim(); vendors[v] = (vendors[v] || 0) + 1; });
+  charts.vendor = new Chart(document.getElementById('chart-vendor'), {
+    type: 'pie',
+    data: { labels: Object.keys(vendors), datasets: [{ data: Object.values(vendors), backgroundColor: ['#1a1a2e','#e94560','#f59e0b','#10b981','#3b82f6','#8b5cf6','#ec4899'] }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{ position:'right' } } }
+  });
+}
+
+function renderApprovalChart() {
+  destroyChart('approval');
+  const statuses = { 'Approved': 0, 'Not Approved': 0, 'Given To Develop': 0, 'Other': 0 };
+  (allData['Color_Development']?.rows || []).forEach(r => {
+    const s = String(r.Coats_Status || '').toLowerCase();
+    if (s.includes('not approved')) statuses['Not Approved']++;
+    else if (s.includes('approved')) statuses['Approved']++;
+    else if (s.includes('develop')) statuses['Given To Develop']++;
+    else statuses['Other']++;
+  });
+  charts.approval = new Chart(document.getElementById('chart-approval'), {
+    type: 'bar',
+    data: { labels: Object.keys(statuses), datasets: [{ label: 'Count', data: Object.values(statuses), backgroundColor: ['#10b981','#ef4444','#f59e0b','#6b7280'] }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{ display:false } } }
+  });
+}
+
+function renderZipperChart() {
+  destroyChart('zipper');
+  const top = (allData['Zippers']?.rows || [])
+    .map(r => ({ code: r.Zipper_Code, qty: Number(r.Balance_Material) || 0 }))
+    .filter(r => r.qty > 0).sort((a,b) => b.qty - a.qty).slice(0,10);
+  charts.zipper = new Chart(document.getElementById('chart-zipper'), {
+    type: 'bar',
+    data: { labels: top.map(t => t.code), datasets: [{ label: 'Stock', data: top.map(t => t.qty), backgroundColor: '#3b82f6' }] },
+    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins:{ legend:{ display:false } } }
+  });
+}
+
+function renderLowStockList() {
+  const container = document.getElementById('lowStockList');
+  const lows = (allData['Zippers']?.rows || [])
+    .filter(r => { const n = Number(r.Balance_Material); return !isNaN(n) && n < 50 && n >= 0; })
+    .sort((a,b) => Number(a.Balance_Material) - Number(b.Balance_Material));
+  if (lows.length === 0) {
+    container.innerHTML = '<p style="color:var(--muted); padding:20px;">No low-stock items 🎉</p>';
+    return;
+  }
+  container.innerHTML = lows.map(r => `
+    <div style="padding:10px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between;">
+      <span>${r.Zipper_Code || '-'}</span>
+      <span class="badge ${Number(r.Balance_Material) === 0 ? 'badge-danger' : 'badge-warning'}">${r.Balance_Material}</span>
+    </div>`).join('');
+}
+
+function toggleDashlet(name, show) {
+  const el = document.getElementById('dashlet-' + name);
+  if (el) el.classList.toggle('hidden', !show);
+}
+
+// ============================================================
+// SMART ENTRY FORM
+// ============================================================
+function renderEntryForm() {
+  const cat = document.getElementById('entryCategory').value;
+  const container = document.getElementById('entryFormFields');
+  const actions = document.getElementById('entryActions');
+  if (!cat) { container.innerHTML = ''; actions.style.display = 'none'; return; }
+
+  const fields = SCHEMAS[cat];
+  container.innerHTML = '<div class="form-grid">' + fields.map(f => {
+    const type = DATE_FIELDS.includes(f) ? 'date' : (NUM_FIELDS.includes(f) ? 'number' : 'text');
+    return `<div class="form-field"><label>${f.replace(/_/g, ' ')}</label><input type="${type}" name="${f}" /></div>`;
+  }).join('') + '</div>';
+  actions.style.display = 'flex';
+}
+
+async function submitEntry() {
+  const cat = document.getElementById('entryCategory').value;
+  if (!cat) return;
+  const inputs = document.querySelectorAll('#entryFormFields input');
+  const row = {};
+  inputs.forEach(i => { row[i.name] = i.value; });
+
+  const res = await api({ action: 'addRow', sheet: cat, row: row });
+  if (res.success) { toast('Entry saved'); resetForm(); await loadAllData(); }
+  else toast('Save failed: ' + res.error, true);
+}
+
+function resetForm() {
+  document.querySelectorAll('#entryFormFields input').forEach(i => i.value = '');
+}
+
+// ============================================================
+// DATA TABLES
+// ============================================================
+function renderTable(sheetName) {
+  const container = document.getElementById('table-' + sheetName);
+  if (!container) return;
+
+  if (!hasViewAccess(sheetName)) {
+    container.innerHTML = '<div class="info-banner">You do not have access to this view. Contact your Super Admin.</div>';
+    return;
+  }
+
+  const data = allData[sheetName];
+  if (!data || !data.rows) { container.innerHTML = '<div class="loader">No data</div>'; return; }
+
+  const headers = SCHEMAS[sheetName] || data.headers;
+  const showActions = currentPerms.edit || currentPerms.delete;
+
+  container.innerHTML = `
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <input type="text" placeholder="Search…" oninput="filterTable('${sheetName}', this.value)" />
+        <span style="color:var(--muted);font-size:13px;">${data.rows.length} records</span>
+      </div>
+      <div style="overflow-x:auto; max-height:600px; overflow-y:auto;">
+      <table id="tbl-${sheetName}">
+        <thead><tr>${headers.map(h => `<th>${h.replace(/_/g,' ')}</th>`).join('')}${showActions ? '<th>Actions</th>' : ''}</tr></thead>
+        <tbody>
+          ${data.rows.map(r => `
+            <tr>
+              ${headers.map(h => `<td>${formatCell(r[h])}</td>`).join('')}
+              ${showActions ? `<td>
+                ${currentPerms.edit ? `<button class="btn-edit" onclick="openEdit('${sheetName}', ${r._rowIndex})">Edit</button>` : ''}
+                ${currentPerms.delete ? `<button class="btn-del" onclick="deleteDataRow('${sheetName}', ${r._rowIndex})">Delete</button>` : ''}
+              </td>` : ''}
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      </div>
+    </div>`;
+}
+
+function formatCell(v) {
+  if (v === null || v === undefined || v === '') return '-';
+  if (v instanceof Date) return v.toLocaleDateString();
+  const str = String(v);
+  if (/^\d{4}-\d{2}-\d{2}T/.test(str)) return new Date(str).toLocaleDateString();
+  return str;
+}
+
+function filterTable(sheetName, q) {
+  const rows = document.querySelectorAll('#tbl-' + sheetName + ' tbody tr');
+  const Q = q.toLowerCase();
+  rows.forEach(r => { r.style.display = r.textContent.toLowerCase().includes(Q) ? '' : 'none'; });
+}
+
+// ============================================================
+// EDIT / DELETE DATA ROWS
+// ============================================================
+function openEdit(sheetName, rowIndex) {
+  const row = (allData[sheetName].rows || []).find(r => r._rowIndex === rowIndex);
+  if (!row) return;
+  editContext = { sheet: sheetName, rowIndex: rowIndex };
+  document.getElementById('editModalTitle').textContent = 'Edit ' + sheetName.replace(/_/g,' ');
+  const fields = SCHEMAS[sheetName];
+  document.getElementById('editModalFields').innerHTML = '<div class="form-grid">' +
+    fields.map(f => {
+      const type = DATE_FIELDS.includes(f) ? 'date' : (NUM_FIELDS.includes(f) ? 'number' : 'text');
+      let v = row[f] ?? '';
+      if (type === 'date' && /^\d{4}-\d{2}-\d{2}T/.test(String(v))) v = String(v).slice(0, 10);
+      return `<div class="form-field"><label>${f.replace(/_/g,' ')}</label>
+              <input type="${type}" name="${f}" value="${String(v).replace(/"/g,'&quot;')}" /></div>`;
+    }).join('') + '</div>';
+  document.getElementById('editModal').classList.add('active');
+}
+
+async function saveEdit() {
+  const inputs = document.querySelectorAll('#editModalFields input');
+  const row = {};
+  inputs.forEach(i => { row[i.name] = i.value; });
+  const res = await api({ action: 'updateRow', sheet: editContext.sheet, rowIndex: editContext.rowIndex, row: row });
+  if (res.success) { toast('Updated'); closeModal('editModal'); await loadAllData(); }
+  else toast('Update failed: ' + res.error, true);
+}
+
+async function deleteDataRow(sheetName, rowIndex) {
+  if (!confirm('Delete this row?')) return;
+  const res = await api({ action: 'deleteRow', sheet: sheetName, rowIndex: rowIndex });
+  if (res.success) { toast('Deleted'); await loadAllData(); }
+  else toast('Delete failed: ' + res.error, true);
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+// ============================================================
+// USER MANAGEMENT
+// ============================================================
+async function loadUsers() {
+  const res = await api({ action: 'getUsers' });
+  if (!res.success) { toast(res.error, true); return; }
+  const container = document.getElementById('usersTable');
+  container.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Username</th><th>Role</th><th>Allowed Views</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${(res.rows || []).map(u => `
+            <tr>
+              <td><strong>${u.Username}</strong></td>
+              <td><span class="badge ${u.Role === 'Super Admin' ? 'badge-danger' : u.Role === 'Admin' ? 'badge-info' : u.Role === 'Data Entry' ? 'badge-warning' : 'badge-success'}">${u.Role}</span></td>
+              <td style="font-size:12px;">${formatViews(u.Allowed_Views)}</td>
+              <td>${formatCell(u.Created_Date)}</td>
+              <td>
+                <button class="btn-edit" onclick='openEditUser(${JSON.stringify(u).replace(/'/g, "&#39;")})'>Edit</button>
+                <button class="btn-del" onclick="delUser(${u._rowIndex}, '${u.Username}')">Delete</button>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function formatViews(v) {
+  if (!v || v === 'ALL') return '<span class="badge badge-info">ALL</span>';
+  return String(v).split(',').map(s => `<span class="badge badge-success" style="margin-right:3px;">${s.trim().replace(/_/g,' ')}</span>`).join('');
+}
+
+function openUserModal() {
+  userEditContext = null;
+  document.getElementById('userModalTitle').textContent = 'Add New User';
+  document.getElementById('userSaveBtn').textContent = 'Add User';
+  document.getElementById('newUser').value = '';
+  document.getElementById('newUser').disabled = false;
+  document.getElementById('newPass').value = '';
+  document.getElementById('passHint').textContent = '';
+  document.getElementById('newRole').value = 'Viewer';
+  document.querySelectorAll('#viewsCheckboxes input').forEach(cb => cb.checked = false);
+  document.getElementById('cb-ALL').checked = true;
+  toggleAllViews(document.getElementById('cb-ALL'));
+  updateAccessHint();
+  document.getElementById('userModal').classList.add('active');
+}
+
+function openEditUser(user) {
+  userEditContext = user;
+  document.getElementById('userModalTitle').textContent = 'Edit User: ' + user.Username;
+  document.getElementById('userSaveBtn').textContent = 'Save Changes';
+  document.getElementById('newUser').value = user.Username;
+  document.getElementById('newUser').disabled = true;
+  document.getElementById('newPass').value = '';
+  document.getElementById('passHint').textContent = '(leave blank to keep current)';
+  document.getElementById('newRole').value = user.Role;
+
+  document.querySelectorAll('#viewsCheckboxes input').forEach(cb => cb.checked = false);
+  const av = String(user.Allowed_Views || 'ALL').trim();
+  if (av === 'ALL' || av === '') {
+    document.getElementById('cb-ALL').checked = true;
+    toggleAllViews(document.getElementById('cb-ALL'));
+  } else {
+    av.split(',').map(s => s.trim()).forEach(v => {
+      const cb = document.querySelector(`#viewsCheckboxes input[value="${v}"]`);
+      if (cb) cb.checked = true;
+    });
+  }
+  updateAccessHint();
+  document.getElementById('userModal').classList.add('active');
+}
+
+function toggleAllViews(allCb) {
+  document.querySelectorAll('.view-cb').forEach(cb => {
+    cb.disabled = allCb.checked;
+    if (allCb.checked) cb.checked = false;
+  });
+}
+
+function updateAccessHint() {
+  const role = document.getElementById('newRole').value;
+  const hints = {
+    'Super Admin': '— Full access, manages all users',
+    'Admin': '— Can edit/delete data, cannot manage users',
+    'Data Entry': '— Can only add new rows, no edit/delete',
+    'Viewer': '— Read-only access'
+  };
+  document.getElementById('accessHint').textContent = hints[role] || '';
+}
+
+async function saveUser() {
+  const u = document.getElementById('newUser').value.trim();
+  const p = document.getElementById('newPass').value;
+  const r = document.getElementById('newRole').value;
+
+  let allowedViews;
+  if (document.getElementById('cb-ALL').checked) {
+    allowedViews = 'ALL';
+  } else {
+    const checked = Array.from(document.querySelectorAll('.view-cb:checked')).map(cb => cb.value);
+    if (checked.length === 0) { toast('Select at least one view (or ALL)', true); return; }
+    allowedViews = checked.join(',');
+  }
+
+  if (!u) { toast('Username required', true); return; }
+  if (!userEditContext && !p) { toast('Password required for new user', true); return; }
+
+  const row = { Username: u, Password: p, Role: r, Allowed_Views: allowedViews };
+
+  let res;
+  if (userEditContext) {
+    res = await api({ action: 'updateUser', rowIndex: userEditContext._rowIndex, row: row });
+  } else {
+    row.Created_Date = new Date().toISOString();
+    res = await api({ action: 'addUser', row: row });
+  }
+
+  if (res.success) {
+    toast(userEditContext ? 'User updated' : 'User added');
+    closeModal('userModal');
+    await loadUsers();
+  } else {
+    toast('Failed: ' + res.error, true);
+  }
+}
+
+async function delUser(rowIndex, username) {
+  if (username === currentUser.username) { toast('Cannot delete yourself', true); return; }
+  if (!confirm('Delete user ' + username + '?')) return;
+  const res = await api({ action: 'deleteUser', rowIndex: rowIndex });
+  if (res.success) { toast('User deleted'); await loadUsers(); }
+  else toast('Failed: ' + res.error, true);
+}
+
+// ============================================================
+// ACTIVITY LOG
+// ============================================================
+async function loadActivityLog() {
+  const res = await api({ action: 'getActivityLog' });
+  if (!res.success) { toast(res.error, true); return; }
+  const container = document.getElementById('logsTable');
+  const rows = (res.rows || []).reverse(); // newest first
+  container.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Sheet</th><th>Details</th></tr></thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td style="font-size:12px;">${formatCell(r.Timestamp)}</td>
+              <td><strong>${r.User}</strong></td>
+              <td><span class="badge badge-info">${r.Action}</span></td>
+              <td>${r.Sheet}</td>
+              <td style="font-size:12px; max-width:300px; overflow:hidden; text-overflow:ellipsis;">${r.Details || '-'}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+document.getElementById('loginPass').addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>
