@@ -3,240 +3,610 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Ozone Next Impact — Inventory Dashboard</title>
+<title>Ozone Next Impact — Atelier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* ============================================================
+     OZONE ATELIER — Design System
+     A refined leather-inspired interface.
+     ============================================================ */
   :root {
-    --primary: #1a1a2e;
-    --accent: #e94560;
-    --bg: #f4f6f9;
-    --card: #ffffff;
-    --text: #2c2c54;
-    --muted: #6b7280;
-    --border: #e5e7eb;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
+    --leather-deep:    #1a1410;
+    --leather-bg:      #211a14;
+    --leather-card:    #2a2018;
+    --leather-card-2:  #332720;
+    --leather-line:    #3a2d24;
+    --cognac:          #b08454;
+    --cognac-light:    #c89971;
+    --brass:           #d4a574;
+    --gold:            #e8c896;
+    --ivory:           #f5ede0;
+    --ivory-dim:       #d4cbb8;
+    --muted:           #8a7e6f;
+    --danger:          #c4574b;
+    --success:         #7a9968;
+    --warning:         #d4a574;
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter Tight', -apple-system, sans-serif;
+
+    --radius: 4px;
+    --radius-lg: 8px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
+    --shadow-lg: 0 30px 80px rgba(0,0,0,0.7);
   }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--leather-deep); color: var(--ivory); font-family: var(--font-body); font-feature-settings: "ss01" 1, "cv11" 1; -webkit-font-smoothing: antialiased; }
+  body { min-height: 100vh; position: relative; }
 
-  /* LOGIN */
-  #loginScreen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
-  .login-box { background: var(--card); padding: 40px; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 380px; }
-  .login-box h1 { text-align: center; margin-bottom: 8px; color: var(--primary); }
-  .login-box .subtitle { text-align: center; color: var(--muted); margin-bottom: 24px; font-size: 13px; }
-  .login-box input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
-  .login-box button { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-  .login-box button:hover { opacity: 0.9; }
+  /* Subtle leather grain texture overlay */
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.05  0 0 0 0 0.04  0 0 0 0 0.03  0 0 0 0.4 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: 0.35; mix-blend-mode: overlay;
+  }
+  body > * { position: relative; z-index: 2; }
+
+  .font-display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; }
+
+  /* ============================================================
+     LOGIN SCREEN
+     ============================================================ */
+  #loginScreen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 24px;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(176,132,84,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(212,165,116,0.08) 0%, transparent 50%),
+      linear-gradient(135deg, #150f0a 0%, #211a14 100%);
+  }
+  .login-stage { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; max-width: 1100px; width: 100%; align-items: center; }
+  .login-brand h1 {
+    font-family: var(--font-display); font-weight: 300; font-size: 88px;
+    line-height: 0.9; letter-spacing: -0.04em; color: var(--ivory);
+    margin-bottom: 24px;
+  }
+  .login-brand h1 em { font-style: italic; font-weight: 400; color: var(--cognac-light); }
+  .login-brand .divider { width: 64px; height: 1px; background: var(--brass); margin: 32px 0; }
+  .login-brand p { font-size: 15px; color: var(--ivory-dim); line-height: 1.7; max-width: 380px; }
+  .login-brand .meta { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--brass); margin-bottom: 8px; }
+
+  .login-box {
+    background: var(--leather-card); padding: 48px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--leather-line);
+    position: relative;
+  }
+  .login-box::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--brass), transparent);
+  }
+  .login-box h2 { font-family: var(--font-display); font-weight: 400; font-size: 28px; margin-bottom: 4px; }
+  .login-box .sub { font-size: 13px; color: var(--muted); margin-bottom: 32px; letter-spacing: 0.05em; }
+  .login-box .field { margin-bottom: 20px; }
+  .login-box label { display: block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brass); margin-bottom: 8px; }
+  .login-box input {
+    width: 100%; padding: 14px 16px; background: var(--leather-bg);
+    border: 1px solid var(--leather-line); border-radius: var(--radius);
+    color: var(--ivory); font-family: var(--font-body); font-size: 15px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .login-box input:focus { outline: none; border-color: var(--cognac); background: var(--leather-deep); }
+  .login-box button {
+    width: 100%; padding: 16px; background: var(--cognac); color: var(--leather-deep);
+    border: none; border-radius: var(--radius); font-family: var(--font-body);
+    font-size: 13px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+    cursor: pointer; margin-top: 8px; transition: background 0.2s, transform 0.1s;
+  }
+  .login-box button:hover { background: var(--cognac-light); }
+  .login-box button:active { transform: translateY(1px); }
   .login-box button:disabled { opacity: 0.5; cursor: not-allowed; }
-  .error-msg { color: var(--danger); font-size: 13px; margin-top: 10px; text-align: center; }
+  .error-msg { color: var(--danger); font-size: 13px; margin-top: 16px; text-align: center; }
+  .login-footer { font-size: 11px; color: var(--muted); margin-top: 32px; text-align: center; letter-spacing: 0.1em; }
 
-  /* MAIN APP */
-  #app { display: none; }
-  .topbar { background: var(--primary); color: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-  .topbar h2 { font-size: 18px; font-weight: 600; }
-  .topbar .user-info { display: flex; gap: 16px; align-items: center; font-size: 14px; }
-  .topbar button { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; }
-  .role-badge { background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 12px; font-size: 12px; }
+  @media (max-width: 900px) {
+    .login-stage { grid-template-columns: 1fr; gap: 40px; }
+    .login-brand h1 { font-size: 56px; }
+  }
 
-  .layout { display: flex; min-height: calc(100vh - 56px); }
-  .sidebar { width: 240px; background: white; padding: 20px 0; border-right: 1px solid var(--border); overflow-y: auto; }
-  .sidebar h3 { font-size: 11px; text-transform: uppercase; color: var(--muted); padding: 0 20px; margin-bottom: 8px; margin-top: 16px; letter-spacing: 0.5px; }
-  .nav-item { padding: 12px 20px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; transition: background 0.15s; }
-  .nav-item:hover { background: #f3f4f6; }
-  .nav-item.active { background: #fee2e7; color: var(--accent); font-weight: 600; border-left: 3px solid var(--accent); padding-left: 17px; }
+  /* ============================================================
+     APP SHELL
+     ============================================================ */
+  #app { display: none; min-height: 100vh; }
+  .topbar {
+    background: var(--leather-bg);
+    border-bottom: 1px solid var(--leather-line);
+    padding: 18px 32px; display: flex; justify-content: space-between; align-items: center;
+    position: sticky; top: 0; z-index: 20; backdrop-filter: blur(20px);
+  }
+  .topbar .brand { display: flex; align-items: center; gap: 14px; }
+  .topbar .brand-mark {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--cognac) 0%, var(--brass) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--leather-deep); font-family: var(--font-display); font-weight: 700; font-size: 18px;
+  }
+  .topbar .brand-text { font-family: var(--font-display); font-size: 18px; font-weight: 500; }
+  .topbar .brand-text em { font-style: italic; color: var(--cognac-light); font-weight: 400; }
+  .topbar-right { display: flex; gap: 20px; align-items: center; }
+  .user-chip { display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: var(--leather-card); border: 1px solid var(--leather-line); border-radius: 24px; font-size: 13px; }
+  .user-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--cognac); color: var(--leather-deep); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+  .role-pill { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--brass); padding-left: 12px; border-left: 1px solid var(--leather-line); }
+  .btn-logout { background: transparent; color: var(--ivory-dim); border: 1px solid var(--leather-line); padding: 8px 16px; border-radius: var(--radius); font-family: var(--font-body); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .btn-logout:hover { border-color: var(--cognac); color: var(--cognac-light); }
+
+  .layout { display: flex; min-height: calc(100vh - 73px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px; background: var(--leather-bg);
+    border-right: 1px solid var(--leather-line);
+    padding: 24px 0; overflow-y: auto;
+  }
+  .sidebar-section { padding: 12px 0; }
+  .sidebar h3 {
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--brass); padding: 0 28px; margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .nav-item {
+    padding: 11px 28px; cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; gap: 12px;
+    color: var(--ivory-dim); transition: all 0.2s; position: relative;
+  }
+  .nav-item:hover { color: var(--ivory); background: rgba(176,132,84,0.05); }
+  .nav-item.active { color: var(--cognac-light); background: rgba(176,132,84,0.1); }
+  .nav-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--cognac); }
   .nav-item.hidden { display: none; }
-  .dashlet-toggle { padding: 8px 20px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-  .dashlet-toggle input { cursor: pointer; }
-  .dashlet-toggle label { cursor: pointer; user-select: none; }
+  .nav-icon { width: 18px; text-align: center; opacity: 0.7; }
+  .dashlet-toggle {
+    padding: 7px 28px; font-size: 13px; display: flex; align-items: center; gap: 10px;
+    color: var(--ivory-dim); cursor: pointer; transition: color 0.2s;
+  }
+  .dashlet-toggle:hover { color: var(--ivory); }
+  .dashlet-toggle input[type="checkbox"] {
+    appearance: none; width: 14px; height: 14px;
+    border: 1px solid var(--leather-line); border-radius: 2px;
+    background: var(--leather-bg); cursor: pointer; position: relative;
+    transition: all 0.2s;
+  }
+  .dashlet-toggle input[type="checkbox"]:checked {
+    background: var(--cognac); border-color: var(--cognac);
+  }
+  .dashlet-toggle input[type="checkbox"]:checked::after {
+    content: '✓'; position: absolute; top: -2px; left: 2px;
+    color: var(--leather-deep); font-size: 11px; font-weight: 700;
+  }
+  .dashlet-toggle label { cursor: pointer; user-select: none; flex: 1; }
 
-  .main { flex: 1; padding: 24px; overflow-y: auto; }
-  .view { display: none; }
+  /* MAIN */
+  .main {
+    flex: 1; padding: 40px 48px; overflow-y: auto;
+    background: var(--leather-deep);
+  }
+  .view { display: none; animation: fadeIn 0.4s ease; }
   .view.active { display: block; }
-  .view h1 { font-size: 22px; margin-bottom: 20px; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .kpi-card { background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-left: 4px solid var(--accent); }
-  .kpi-card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; }
-  .kpi-card .value { font-size: 28px; font-weight: 700; margin-top: 4px; color: var(--primary); }
+  .page-header { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--leather-line); }
+  .page-eyebrow { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--brass); margin-bottom: 8px; }
+  .page-title { font-family: var(--font-display); font-weight: 400; font-size: 42px; letter-spacing: -0.02em; }
+  .page-title em { font-style: italic; color: var(--cognac-light); }
+  .page-subtitle { font-size: 14px; color: var(--ivory-dim); margin-top: 8px; max-width: 600px; line-height: 1.5; }
 
-  .dashlet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; }
-  .dashlet { background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-  .dashlet h3 { font-size: 14px; margin-bottom: 16px; color: var(--primary); }
-  .dashlet canvas { max-height: 280px; }
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .kpi-card {
+    background: var(--leather-card); padding: 24px; border-radius: var(--radius-lg);
+    border: 1px solid var(--leather-line); position: relative; overflow: hidden;
+  }
+  .kpi-card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 32px;
+    background: linear-gradient(180deg, var(--cognac), transparent);
+  }
+  .kpi-card .label { color: var(--brass); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; }
+  .kpi-card .value { font-family: var(--font-display); font-size: 36px; font-weight: 400; color: var(--ivory); letter-spacing: -0.02em; }
+  .kpi-card .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* DASHLETS */
+  .dashlet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; }
+  .dashlet {
+    background: var(--leather-card); padding: 24px; border-radius: var(--radius-lg);
+    border: 1px solid var(--leather-line); position: relative;
+  }
+  .dashlet h3 { font-family: var(--font-display); font-size: 18px; font-weight: 500; margin-bottom: 20px; color: var(--ivory); display: flex; align-items: center; gap: 10px; }
+  .dashlet h3::before { content: ''; width: 4px; height: 4px; background: var(--cognac); border-radius: 50%; }
+  .dashlet canvas { max-height: 300px; }
   .dashlet.hidden { display: none; }
 
-  .table-wrap { background: var(--card); border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-  .table-toolbar { padding: 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-  .table-toolbar input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 4px; width: 240px; }
+  /* TABLES */
+  .table-card {
+    background: var(--leather-card); border-radius: var(--radius-lg);
+    border: 1px solid var(--leather-line); overflow: hidden;
+  }
+  .table-toolbar {
+    padding: 18px 24px; border-bottom: 1px solid var(--leather-line);
+    display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .table-toolbar input {
+    padding: 10px 16px; background: var(--leather-bg);
+    border: 1px solid var(--leather-line); border-radius: var(--radius);
+    color: var(--ivory); font-family: var(--font-body); font-size: 13px; width: 280px;
+  }
+  .table-toolbar input:focus { outline: none; border-color: var(--cognac); }
+  .toolbar-meta { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .toolbar-actions { display: flex; gap: 10px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead { background: #f9fafb; }
-  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
-  th { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; }
-  td button { padding: 4px 10px; margin-right: 4px; border: none; border-radius: 3px; cursor: pointer; font-size: 12px; }
-  .btn-edit { background: #e0f2fe; color: #0369a1; }
-  .btn-del { background: #fee2e2; color: #dc2626; }
-  .btn-primary { background: var(--accent); color: white; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-size: 14px; }
-  .btn-secondary { background: #e5e7eb; color: #374151; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+  thead { background: var(--leather-card-2); }
+  th, td { padding: 12px 18px; text-align: left; border-bottom: 1px solid var(--leather-line); }
+  th { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brass); font-weight: 600; }
+  td { color: var(--ivory-dim); }
+  tbody tr { transition: background 0.15s; }
+  tbody tr:hover { background: rgba(176,132,84,0.04); }
+  td button { padding: 5px 12px; margin-right: 4px; border: none; border-radius: var(--radius); cursor: pointer; font-size: 11px; font-family: var(--font-body); letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600; transition: opacity 0.2s; }
+  .btn-edit { background: rgba(212,165,116,0.15); color: var(--brass); }
+  .btn-edit:hover { background: rgba(212,165,116,0.25); }
+  .btn-del { background: rgba(196,87,75,0.15); color: var(--danger); }
+  .btn-del:hover { background: rgba(196,87,75,0.25); }
 
-  .form-card { background: var(--card); padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); max-width: 800px; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  /* BUTTONS */
+  .btn-primary {
+    background: var(--cognac); color: var(--leather-deep); border: none;
+    padding: 12px 24px; border-radius: var(--radius);
+    font-family: var(--font-body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary:hover { background: var(--cognac-light); }
+  .btn-primary:active { transform: translateY(1px); }
+  .btn-secondary {
+    background: transparent; color: var(--ivory-dim);
+    border: 1px solid var(--leather-line); padding: 11px 22px; border-radius: var(--radius);
+    font-family: var(--font-body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--cognac); color: var(--cognac-light); }
+  .btn-ghost { background: transparent; color: var(--brass); border: 1px solid transparent; padding: 10px 16px; border-radius: var(--radius); font-family: var(--font-body); font-size: 12px; cursor: pointer; transition: all 0.2s; }
+  .btn-ghost:hover { background: rgba(176,132,84,0.1); }
+
+  /* FORM */
+  .form-card {
+    background: var(--leather-card); padding: 32px; border-radius: var(--radius-lg);
+    border: 1px solid var(--leather-line); max-width: 900px;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   .form-field { display: flex; flex-direction: column; }
-  .form-field label { font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--muted); }
-  .form-field input, .form-field select, .form-field textarea { padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
-  .form-actions { margin-top: 20px; display: flex; gap: 10px; }
+  .form-field label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brass); margin-bottom: 8px; font-weight: 600; }
+  .form-field input, .form-field select, .form-field textarea {
+    padding: 12px 14px; background: var(--leather-bg);
+    border: 1px solid var(--leather-line); border-radius: var(--radius);
+    color: var(--ivory); font-family: var(--font-body); font-size: 14px;
+  }
+  .form-field input:focus, .form-field select:focus { outline: none; border-color: var(--cognac); }
+  .form-field input::placeholder { color: var(--muted); }
+  .form-field select option { background: var(--leather-bg); }
+  .form-field.full { grid-column: 1 / -1; }
+  .form-actions { margin-top: 28px; display: flex; gap: 12px; }
+  .form-error { font-size: 12px; color: var(--danger); margin-top: 6px; }
 
-  .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center; }
+  /* MODAL */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(10,7,5,0.85); backdrop-filter: blur(8px); z-index: 100; align-items: center; justify-content: center; padding: 24px; }
   .modal-bg.active { display: flex; }
-  .modal { background: white; padding: 24px; border-radius: 8px; width: 560px; max-height: 90vh; overflow-y: auto; }
-  .modal h2 { margin-bottom: 16px; }
+  .modal {
+    background: var(--leather-card); padding: 36px; border-radius: var(--radius-lg);
+    border: 1px solid var(--leather-line); box-shadow: var(--shadow-lg);
+    width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto;
+  }
+  .modal h2 { font-family: var(--font-display); font-size: 26px; font-weight: 500; margin-bottom: 4px; }
+  .modal .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+  .modal-wide { max-width: 880px; }
 
-  .checkbox-group { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: #fafafa; }
-  .checkbox-group label { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+  /* CHECKBOX GROUP */
+  .checkbox-group { display: flex; flex-direction: column; gap: 10px; padding: 16px; background: var(--leather-bg); border: 1px solid var(--leather-line); border-radius: var(--radius); }
+  .checkbox-group label { display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; color: var(--ivory-dim); }
+  .checkbox-group input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--cognac); cursor: pointer; }
 
-  .loader { text-align: center; padding: 40px; color: var(--muted); }
-  .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
-  .badge-success { background: #d1fae5; color: #065f46; }
-  .badge-warning { background: #fef3c7; color: #92400e; }
-  .badge-danger { background: #fee2e2; color: #991b1b; }
-  .badge-info { background: #dbeafe; color: #1e40af; }
-  .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 20px; background: var(--success); color: white; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 200; }
+  /* BADGES */
+  .badge { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; display: inline-block; }
+  .badge-success { background: rgba(122,153,104,0.2); color: var(--success); }
+  .badge-warning { background: rgba(212,165,116,0.2); color: var(--brass); }
+  .badge-danger  { background: rgba(196,87,75,0.2); color: var(--danger); }
+  .badge-info    { background: rgba(200,153,113,0.15); color: var(--cognac-light); }
+  .badge-neutral { background: rgba(138,126,111,0.2); color: var(--muted); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; padding: 14px 22px;
+    background: var(--leather-card); border: 1px solid var(--cognac);
+    color: var(--ivory); border-radius: var(--radius);
+    box-shadow: var(--shadow-md); display: none; z-index: 200;
+    font-size: 13px; min-width: 240px;
+  }
   .toast.show { display: block; animation: slideIn 0.3s; }
-  .toast.error { background: var(--danger); }
-  @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .toast.error { border-color: var(--danger); }
+  .toast.success { border-color: var(--success); }
+  @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-  .info-banner { background: #fef3c7; color: #92400e; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; border-left: 4px solid #f59e0b; }
+  /* BANNERS */
+  .info-banner { background: rgba(176,132,84,0.1); border-left: 3px solid var(--cognac); padding: 14px 18px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 20px; font-size: 13px; color: var(--ivory-dim); }
+  .info-banner strong { color: var(--cognac-light); }
+
+  /* BULK UPLOAD ZONE */
+  .upload-zone {
+    border: 2px dashed var(--leather-line); border-radius: var(--radius-lg);
+    padding: 48px 24px; text-align: center; transition: all 0.2s;
+    background: var(--leather-bg); cursor: pointer;
+  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--cognac); background: rgba(176,132,84,0.05); }
+  .upload-zone h4 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin-bottom: 8px; }
+  .upload-zone p { color: var(--muted); font-size: 13px; }
+  .upload-icon { font-size: 48px; color: var(--cognac); margin-bottom: 16px; }
+  .upload-result { margin-top: 24px; }
+  .validation-summary {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 20px 0;
+  }
+  .stat-pill {
+    padding: 16px; background: var(--leather-bg); border-radius: var(--radius);
+    border: 1px solid var(--leather-line); text-align: center;
+  }
+  .stat-pill .num { font-family: var(--font-display); font-size: 32px; font-weight: 500; }
+  .stat-pill .lbl { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brass); margin-top: 4px; }
+  .stat-pill.ok .num { color: var(--success); }
+  .stat-pill.warn .num { color: var(--danger); }
+  .error-list { background: var(--leather-bg); border-radius: var(--radius); padding: 12px; max-height: 260px; overflow-y: auto; border: 1px solid var(--leather-line); }
+  .error-item { padding: 8px 12px; border-bottom: 1px dashed var(--leather-line); font-size: 12px; font-family: 'SF Mono', Menlo, monospace; }
+  .error-item:last-child { border-bottom: none; }
+  .error-item .row-num { color: var(--brass); font-weight: 600; margin-right: 8px; }
+  .error-item .err-text { color: var(--danger); }
+
+  /* RECENT ENTRIES (bottom of each detail page) */
+  .recent-section {
+    margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--leather-line);
+  }
+  .recent-section h3 { font-family: var(--font-display); font-size: 20px; font-weight: 500; margin-bottom: 16px; color: var(--ivory); }
+  .recent-list { display: flex; flex-direction: column; gap: 8px; }
+  .recent-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; background: var(--leather-card); border-radius: var(--radius);
+    border: 1px solid var(--leather-line); font-size: 13px;
+  }
+  .recent-row .when { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+  .recent-row .what { color: var(--ivory-dim); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--leather-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--leather-line); border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--cognac); }
+
+  .empty-state { text-align: center; padding: 48px; color: var(--muted); }
+  .empty-state h4 { font-family: var(--font-display); font-size: 20px; font-weight: 400; color: var(--ivory-dim); margin-bottom: 8px; }
+
+  .helper-link { color: var(--brass); text-decoration: none; border-bottom: 1px dashed var(--brass); font-size: 12px; cursor: pointer; }
+  .helper-link:hover { color: var(--cognac-light); }
+
+  .table-scroll { overflow-x: auto; max-height: 600px; overflow-y: auto; }
 </style>
 </head>
 <body>
 
 <!-- ===== LOGIN ===== -->
 <div id="loginScreen">
-  <div class="login-box">
-    <h1>Ozone Next Impact</h1>
-    <p class="subtitle">Inventory Management Dashboard</p>
-    <input type="text" id="loginUser" placeholder="Username" />
-    <input type="password" id="loginPass" placeholder="Password" />
-    <button id="loginBtn" onclick="doLogin()">Sign In</button>
-    <div class="error-msg" id="loginError"></div>
+  <div class="login-stage">
+    <div class="login-brand">
+      <div class="meta">Ozone Next Impact</div>
+      <h1>The <em>Atelier</em><br>Inventory</h1>
+      <div class="divider"></div>
+      <p>A private workspace for the craft of leather goods. Track every material, color, and component from development to delivery.</p>
+    </div>
+    <div class="login-box">
+      <h2>Sign In</h2>
+      <p class="sub">Authorized personnel only.</p>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="loginUser" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="loginPass" autocomplete="current-password" />
+      </div>
+      <button id="loginBtn" onclick="App.auth.login()">Enter</button>
+      <div class="error-msg" id="loginError"></div>
+      <div class="login-footer">Ozone Atelier · v3.0</div>
+    </div>
   </div>
 </div>
 
 <!-- ===== MAIN APP ===== -->
 <div id="app">
   <div class="topbar">
-    <h2>Ozone Next Impact — Inventory Dashboard</h2>
-    <div class="user-info">
-      <span id="userName"></span>
-      <span class="role-badge" id="roleBadge"></span>
-      <button onclick="logout()">Logout</button>
+    <div class="brand">
+      <div class="brand-mark">O</div>
+      <div class="brand-text">Ozone <em>Atelier</em></div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar" id="userInitial">A</div>
+        <span id="userName">user</span>
+        <span class="role-pill" id="roleBadge">role</span>
+      </div>
+      <button class="btn-logout" onclick="App.auth.logout()">Sign Out</button>
     </div>
   </div>
 
   <div class="layout">
     <aside class="sidebar">
-      <h3>Navigation</h3>
-      <div class="nav-item active" data-view="dashboard" data-sheet="">📊 Dashboard</div>
-      <div class="nav-item" data-view="entry" data-sheet="">➕ Data Entry</div>
-      <div class="nav-item" data-view="outer" data-sheet="Outer_Material">🧵 Outer Material</div>
-      <div class="nav-item" data-view="lining" data-sheet="Lining_Material">🪡 Lining Material</div>
-      <div class="nav-item" data-view="inventory" data-sheet="Inventory">📦 Inventory</div>
-      <div class="nav-item" data-view="colorDev" data-sheet="Color_Development">🎨 Color Development</div>
-      <div class="nav-item" data-view="zippers" data-sheet="Zippers">🤐 Zippers</div>
-      <div class="nav-item" data-view="users" data-sheet="USERS_ADMIN_ONLY">👥 Users</div>
-      <div class="nav-item" data-view="logs" data-sheet="LOGS_ADMIN_ONLY">📜 Activity Log</div>
+      <div class="sidebar-section">
+        <h3>Workspace</h3>
+        <div class="nav-item active" data-view="dashboard" data-sheet=""><span class="nav-icon">◈</span> Dashboard</div>
+        <div class="nav-item" data-view="entry" data-sheet=""><span class="nav-icon">+</span> Add Entry</div>
+        <div class="nav-item" data-view="bulk" data-sheet=""><span class="nav-icon">⇪</span> Bulk Upload</div>
+      </div>
 
-      <h3>Dashlets</h3>
-      <div class="dashlet-toggle"><input type="checkbox" id="dl-stock" checked onchange="toggleDashlet('stock', this.checked)"><label for="dl-stock">Stock by Category</label></div>
-      <div class="dashlet-toggle"><input type="checkbox" id="dl-color" checked onchange="toggleDashlet('color', this.checked)"><label for="dl-color">Color Demand</label></div>
-      <div class="dashlet-toggle"><input type="checkbox" id="dl-vendor" checked onchange="toggleDashlet('vendor', this.checked)"><label for="dl-vendor">Vendor Distribution</label></div>
-      <div class="dashlet-toggle"><input type="checkbox" id="dl-approval" checked onchange="toggleDashlet('approval', this.checked)"><label for="dl-approval">Approval Status</label></div>
-      <div class="dashlet-toggle"><input type="checkbox" id="dl-zipper" checked onchange="toggleDashlet('zipper', this.checked)"><label for="dl-zipper">Zipper Stock</label></div>
-      <div class="dashlet-toggle"><input type="checkbox" id="dl-lowstock" checked onchange="toggleDashlet('lowstock', this.checked)"><label for="dl-lowstock">Low Stock Alerts</label></div>
+      <div class="sidebar-section">
+        <h3>Catalogue</h3>
+        <div class="nav-item" data-view="outer" data-sheet="Outer_Material"><span class="nav-icon">◗</span> Outer Material</div>
+        <div class="nav-item" data-view="lining" data-sheet="Lining_Material"><span class="nav-icon">◗</span> Lining Material</div>
+        <div class="nav-item" data-view="inventory" data-sheet="Inventory"><span class="nav-icon">◗</span> Inventory</div>
+        <div class="nav-item" data-view="colorDev" data-sheet="Color_Development"><span class="nav-icon">◗</span> Color Development</div>
+        <div class="nav-item" data-view="zippers" data-sheet="Zippers"><span class="nav-icon">◗</span> Zippers</div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Administration</h3>
+        <div class="nav-item" data-view="users" data-sheet="USERS_ADMIN_ONLY"><span class="nav-icon">◇</span> Users</div>
+        <div class="nav-item" data-view="logs" data-sheet="LOGS_ADMIN_ONLY"><span class="nav-icon">◇</span> Activity Log</div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Dashlets</h3>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-stock" checked><label for="dl-stock">Stock by Category</label></div>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-color" checked><label for="dl-color">Color Demand</label></div>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-vendor" checked><label for="dl-vendor">Vendor Distribution</label></div>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-approval" checked><label for="dl-approval">Approval Status</label></div>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-zipper" checked><label for="dl-zipper">Zipper Stock</label></div>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-lowstock" checked><label for="dl-lowstock">Low Stock Alerts</label></div>
+      </div>
     </aside>
 
     <main class="main">
+      <!-- DASHBOARD -->
       <section id="view-dashboard" class="view active">
-        <h1>Dashboard Overview</h1>
+        <div class="page-header">
+          <div class="page-eyebrow">Overview</div>
+          <h1 class="page-title">Today at the <em>Atelier</em></h1>
+          <p class="page-subtitle">A summary of materials, colors, and stock in motion.</p>
+        </div>
         <div class="kpi-grid" id="kpiGrid"></div>
         <div class="dashlet-grid" id="dashletGrid">
           <div class="dashlet" id="dashlet-stock"><h3>Stock by Category</h3><canvas id="chart-stock"></canvas></div>
-          <div class="dashlet" id="dashlet-color"><h3>Top 10 Colors in Demand</h3><canvas id="chart-color"></canvas></div>
-          <div class="dashlet" id="dashlet-vendor"><h3>Inventory by Vendor</h3><canvas id="chart-vendor"></canvas></div>
+          <div class="dashlet" id="dashlet-color"><h3>Colors in Demand</h3><canvas id="chart-color"></canvas></div>
+          <div class="dashlet" id="dashlet-vendor"><h3>Vendor Distribution</h3><canvas id="chart-vendor"></canvas></div>
           <div class="dashlet" id="dashlet-approval"><h3>Color Development Status</h3><canvas id="chart-approval"></canvas></div>
-          <div class="dashlet" id="dashlet-zipper"><h3>Zipper Balance Material</h3><canvas id="chart-zipper"></canvas></div>
-          <div class="dashlet" id="dashlet-lowstock"><h3>Low Stock Alerts (Balance &lt; 50)</h3><div id="lowStockList" style="max-height:280px; overflow-y:auto;"></div></div>
+          <div class="dashlet" id="dashlet-zipper"><h3>Zipper Stock — Top 10</h3><canvas id="chart-zipper"></canvas></div>
+          <div class="dashlet" id="dashlet-lowstock">
+            <h3>Low Stock — Balance &lt; 50</h3>
+            <div id="lowStockList" style="max-height:300px; overflow-y:auto;"></div>
+          </div>
         </div>
       </section>
 
+      <!-- ADD ENTRY -->
       <section id="view-entry" class="view">
-        <h1>Add New Entry</h1>
+        <div class="page-header">
+          <div class="page-eyebrow">New Record</div>
+          <h1 class="page-title">Add an <em>Entry</em></h1>
+          <p class="page-subtitle">Choose a category and the form adapts to its schema. All entries sync to your Sheet in real time.</p>
+        </div>
         <div class="form-card">
-          <div class="form-field" style="margin-bottom:16px;">
-            <label>Select Category</label>
-            <select id="entryCategory" onchange="renderEntryForm()"><option value="">-- Choose --</option></select>
+          <div class="form-field" style="margin-bottom:24px;">
+            <label>Category</label>
+            <select id="entryCategory" onchange="App.entry.render()"><option value="">— Choose —</option></select>
           </div>
           <div id="entryFormFields"></div>
           <div class="form-actions" id="entryActions" style="display:none;">
-            <button class="btn-primary" onclick="submitEntry()">Save Entry</button>
-            <button class="btn-secondary" onclick="resetForm()">Clear</button>
+            <button class="btn-primary" onclick="App.entry.submit()">Save Entry</button>
+            <button class="btn-secondary" onclick="App.entry.reset()">Clear</button>
           </div>
+        </div>
+        <div class="recent-section" id="entryRecent" style="display:none;">
+          <h3>Recently Added</h3>
+          <div class="recent-list" id="entryRecentList"></div>
         </div>
       </section>
 
-      <section id="view-outer" class="view"><h1>Outer Material</h1><div id="table-Outer_Material"></div></section>
-      <section id="view-lining" class="view"><h1>Lining Material</h1><div id="table-Lining_Material"></div></section>
-      <section id="view-inventory" class="view"><h1>Inventory</h1><div id="table-Inventory"></div></section>
-      <section id="view-colorDev" class="view"><h1>Color Development</h1><div id="table-Color_Development"></div></section>
-      <section id="view-zippers" class="view"><h1>Zippers</h1><div id="table-Zippers"></div></section>
+      <!-- BULK UPLOAD -->
+      <section id="view-bulk" class="view">
+        <div class="page-header">
+          <div class="page-eyebrow">Mass Entry</div>
+          <h1 class="page-title">Bulk <em>Upload</em></h1>
+          <p class="page-subtitle">Upload an Excel or CSV file. The system validates each row, shows errors, and only imports rows that pass.</p>
+        </div>
+        <div class="form-card">
+          <div class="form-field" style="margin-bottom:24px;">
+            <label>Target Category</label>
+            <select id="bulkCategory" onchange="App.bulk.onCategoryChange()"><option value="">— Choose —</option></select>
+          </div>
+          <div id="bulkTemplateRow" style="display:none; margin-bottom:24px;">
+            <span class="helper-link" onclick="App.bulk.downloadTemplate()">⬇ Download blank template for this category</span>
+          </div>
+          <div class="upload-zone" id="dropZone" onclick="document.getElementById('bulkFile').click()">
+            <div class="upload-icon">⬆</div>
+            <h4>Drop your file here</h4>
+            <p>or click to browse · accepts .xlsx, .xls, .csv</p>
+            <input type="file" id="bulkFile" accept=".xlsx,.xls,.csv" style="display:none;" onchange="App.bulk.handleFile(this.files[0])">
+          </div>
+          <div id="bulkResults" class="upload-result"></div>
+        </div>
+      </section>
 
+      <!-- DATA VIEWS — generated dynamically -->
+      <section id="view-outer" class="view"><div id="page-Outer_Material"></div></section>
+      <section id="view-lining" class="view"><div id="page-Lining_Material"></div></section>
+      <section id="view-inventory" class="view"><div id="page-Inventory"></div></section>
+      <section id="view-colorDev" class="view"><div id="page-Color_Development"></div></section>
+      <section id="view-zippers" class="view"><div id="page-Zippers"></div></section>
+
+      <!-- USERS -->
       <section id="view-users" class="view">
-        <h1>User Management</h1>
-        <div class="info-banner">Only Super Admin can manage users. You can assign roles and choose exactly which views each user can access.</div>
-        <div style="margin-bottom:16px;"><button class="btn-primary" onclick="openUserModal()">+ Add New User</button></div>
+        <div class="page-header">
+          <div class="page-eyebrow">Administration</div>
+          <h1 class="page-title">User <em>Management</em></h1>
+          <p class="page-subtitle">Create roles, assign view permissions, and manage access for the team.</p>
+        </div>
+        <div class="info-banner"><strong>Super Admin only.</strong> You can assign one of four roles and pick exactly which views each user can access.</div>
+        <div style="margin-bottom:24px;"><button class="btn-primary" onclick="App.users.openCreate()">+ Add New User</button></div>
         <div id="usersTable"></div>
       </section>
 
+      <!-- LOGS -->
       <section id="view-logs" class="view">
-        <h1>Activity Log</h1>
+        <div class="page-header">
+          <div class="page-eyebrow">Audit</div>
+          <h1 class="page-title">Activity <em>Log</em></h1>
+          <p class="page-subtitle">A timestamped record of every add, edit, and delete.</p>
+        </div>
         <div id="logsTable"></div>
       </section>
     </main>
   </div>
 </div>
 
-<!-- EDIT MODAL -->
+<!-- ============ MODALS ============ -->
 <div class="modal-bg" id="editModal">
-  <div class="modal">
+  <div class="modal modal-wide">
     <h2 id="editModalTitle">Edit Row</h2>
+    <p class="modal-sub">Changes save instantly to your Google Sheet.</p>
     <div id="editModalFields"></div>
     <div class="form-actions">
-      <button class="btn-primary" onclick="saveEdit()">Save</button>
-      <button class="btn-secondary" onclick="closeModal('editModal')">Cancel</button>
+      <button class="btn-primary" onclick="App.tables.saveEdit()">Save Changes</button>
+      <button class="btn-secondary" onclick="App.ui.closeModal('editModal')">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- USER MODAL -->
 <div class="modal-bg" id="userModal">
   <div class="modal">
     <h2 id="userModalTitle">Add User</h2>
-    <div class="form-field"><label>Username</label><input id="newUser" /></div>
-    <div class="form-field" style="margin-top:10px;"><label>Password <span id="passHint" style="font-weight:normal; color:var(--muted);"></span></label><input id="newPass" type="text" /></div>
-    <div class="form-field" style="margin-top:10px;">
-      <label>Role</label>
-      <select id="newRole" onchange="updateAccessHint()">
-        <option>Super Admin</option>
-        <option>Admin</option>
-        <option>Data Entry</option>
-        <option>Viewer</option>
+    <p class="modal-sub" id="userModalSub">Create credentials and choose access scope.</p>
+    <div class="form-field" style="margin-bottom:14px;"><label>Username</label><input id="newUser" /></div>
+    <div class="form-field" style="margin-bottom:14px;"><label>Password <span id="passHint" style="text-transform:none; letter-spacing:0; color:var(--muted); font-weight:400;"></span></label><input id="newPass" type="text" /></div>
+    <div class="form-field" style="margin-bottom:14px;">
+      <label>Role <span id="accessHint" style="text-transform:none; letter-spacing:0; color:var(--muted); font-weight:400;"></span></label>
+      <select id="newRole" onchange="App.users.updateHint()">
+        <option>Super Admin</option><option>Admin</option><option>Data Entry</option><option>Viewer</option>
       </select>
     </div>
-    <div class="form-field" style="margin-top:10px;">
-      <label>Allowed Views <span id="accessHint" style="font-weight:normal; color:var(--muted);"></span></label>
+    <div class="form-field" style="margin-bottom:14px;">
+      <label>Allowed Views</label>
       <div class="checkbox-group" id="viewsCheckboxes">
-        <label><input type="checkbox" value="ALL" id="cb-ALL" onchange="toggleAllViews(this)"> <strong>ALL Views</strong></label>
+        <label><input type="checkbox" value="ALL" id="cb-ALL" onchange="App.users.toggleAll(this)"> <strong>ALL Views</strong></label>
         <label><input type="checkbox" value="Outer_Material" class="view-cb"> Outer Material</label>
         <label><input type="checkbox" value="Lining_Material" class="view-cb"> Lining Material</label>
         <label><input type="checkbox" value="Inventory" class="view-cb"> Inventory</label>
@@ -245,615 +615,875 @@
       </div>
     </div>
     <div class="form-actions">
-      <button class="btn-primary" id="userSaveBtn" onclick="saveUser()">Add User</button>
-      <button class="btn-secondary" onclick="closeModal('userModal')">Cancel</button>
+      <button class="btn-primary" id="userSaveBtn" onclick="App.users.save()">Add User</button>
+      <button class="btn-secondary" onclick="App.ui.closeModal('userModal')">Cancel</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<!-- ============================================================
+     APP CODE — modular structure for easy extension
+     ============================================================
+     Architecture:
+       App.config   — schemas, roles, branding (single source of truth)
+       App.state    — runtime state (user, data, charts)
+       App.api      — fetch wrapper, all server calls
+       App.auth     — login/logout/permissions
+       App.ui       — toast, modals, formatting
+       App.dashboard — KPIs, charts, dashlets
+       App.entry    — add-entry form
+       App.bulk     — bulk upload + validation
+       App.tables   — per-sheet data tables, edit/delete
+       App.users    — user CRUD
+       App.logs     — activity log viewer
+
+     To ADD A NEW FEATURE later:
+       1. Add config to App.config (schema, role-permissions if needed)
+       2. Create a new module: App.myFeature = { init(), render() }
+       3. Add a nav item with data-view="myFeature"
+       4. Add a <section id="view-myFeature"> to main
+       5. Call App.myFeature.init() from App.boot()
+
+     To ADD A NEW DATA CATEGORY:
+       1. Add to App.config.SCHEMAS
+       2. Add a sidebar nav-item + section
+       3. The tables, entry form, bulk upload all auto-pick it up
+============================================================ -->
 <script>
-// ============================================================
-// CONFIG — paste your deployed Apps Script Web App URL here
-// ============================================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw6HnwKHHO-NP2aVGCMGQWuCK0kOgcpeA4N2nn3YFvV4vMgT_8OXV_74XAc78deWN79/exec';
+const App = (() => {
+  /* ==========================================================
+     CONFIG — change anything here, rest of app adapts
+     ========================================================== */
+  const config = {
+    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw6HnwKHHO-NP2aVGCMGQWuCK0kOgcpeA4N2nn3YFvV4vMgT_8OXV_74XAc78deWN79/exec',
 
-const SCHEMAS = {
-  'Outer_Material':     ['Style_No', 'Style_Name', 'Item_Code', 'Thickness', 'Pattern', 'Color', 'Quantity', 'Date_Added'],
-  'Lining_Material':    ['Style_No', 'Style_Name', 'Lining_Item', 'GSM', 'Color', 'Quantity', 'Date_Added'],
-  'Inventory':          ['S_No', 'Material', 'Code', 'Colour_Name', 'Vendor', 'Thread_Code', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Date_Added'],
-  'Color_Development':  ['Code', 'Leather_Lining_Name', 'Coats_Code', 'Coats_Dev_Date', 'Coats_Status', 'Serafil_Code', 'Serafil_Dev_Date', 'Serafil_Status'],
-  'Zippers':            ['S_No', 'Zipper_Code', 'Approval_Status', 'Balance_Material', 'Vendor', 'Date_Added']
-};
-
-const VIEW_TO_SHEET = {
-  'outer': 'Outer_Material', 'lining': 'Lining_Material', 'inventory': 'Inventory',
-  'colorDev': 'Color_Development', 'zippers': 'Zippers'
-};
-
-const DATE_FIELDS = ['Date_Added', 'Coats_Dev_Date', 'Serafil_Dev_Date'];
-const NUM_FIELDS = ['Quantity', 'GSM', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Balance_Material', 'S_No'];
-
-let currentUser = null;
-let currentPerms = null;
-let credentials = { username: '', password: '' };
-let allData = {};
-let charts = {};
-let editContext = { sheet: null, rowIndex: null };
-let userEditContext = null;
-
-// ============================================================
-// API HELPER
-// ============================================================
-async function api(payload) {
-  payload.username = credentials.username;
-  payload.password = credentials.password;
-  const res = await fetch(APPS_SCRIPT_URL, {
-    method: 'POST', body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'text/plain' }
-  });
-  return await res.json();
-}
-
-// ============================================================
-// LOGIN
-// ============================================================
-async function doLogin() {
-  const u = document.getElementById('loginUser').value.trim();
-  const p = document.getElementById('loginPass').value;
-  const btn = document.getElementById('loginBtn');
-  const err = document.getElementById('loginError');
-  err.textContent = '';
-
-  if (!u || !p) { err.textContent = 'Enter username and password'; return; }
-  if (APPS_SCRIPT_URL.includes('PASTE_YOUR')) {
-    err.textContent = 'Configure APPS_SCRIPT_URL first.'; return;
-  }
-
-  btn.disabled = true; btn.textContent = 'Signing in…';
-  try {
-    credentials = { username: u, password: p };
-    const res = await api({ action: 'login' });
-    if (res.success) {
-      currentUser = res.user;
-      currentPerms = res.permissions;
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      document.getElementById('userName').textContent = currentUser.username;
-      document.getElementById('roleBadge').textContent = currentUser.role;
-      applyRoleUI();
-      await loadAllData();
-    } else {
-      credentials = { username: '', password: '' };
-      err.textContent = res.error || 'Login failed';
+    SCHEMAS: {
+      'Outer_Material':     ['Style_No', 'Style_Name', 'Item_Code', 'Thickness', 'Pattern', 'Color', 'Quantity', 'Date_Added'],
+      'Lining_Material':    ['Style_No', 'Style_Name', 'Lining_Item', 'GSM', 'Color', 'Quantity', 'Date_Added'],
+      'Inventory':          ['S_No', 'Material', 'Code', 'Colour_Name', 'Vendor', 'Thread_Code', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Date_Added'],
+      'Color_Development':  ['Code', 'Leather_Lining_Name', 'Coats_Code', 'Coats_Dev_Date', 'Coats_Status', 'Serafil_Code', 'Serafil_Dev_Date', 'Serafil_Status'],
+      'Zippers':            ['S_No', 'Zipper_Code', 'Approval_Status', 'Balance_Material', 'Vendor', 'Date_Added']
+    },
+    REQUIRED_FIELDS: {
+      'Outer_Material':     ['Style_No', 'Style_Name', 'Item_Code'],
+      'Lining_Material':    ['Style_No', 'Lining_Item'],
+      'Inventory':          ['Material', 'Code'],
+      'Color_Development':  ['Code', 'Leather_Lining_Name'],
+      'Zippers':            ['Zipper_Code']
+    },
+    DATE_FIELDS: ['Date_Added', 'Coats_Dev_Date', 'Serafil_Dev_Date'],
+    NUM_FIELDS: ['Quantity', 'GSM', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Balance_Material', 'S_No'],
+    ENUM_FIELDS: {
+      'Approval_Status': ['Approved', 'Not Approved', 'Pending'],
+      'Coats_Status':    ['Approved', 'Not Approved', 'Given To Develop', 'Pending'],
+      'Serafil_Status':  ['Approved', 'Not Approved', 'Given To Develop', 'Pending']
+    },
+    VIEW_TO_SHEET: {
+      'outer': 'Outer_Material', 'lining': 'Lining_Material', 'inventory': 'Inventory',
+      'colorDev': 'Color_Development', 'zippers': 'Zippers'
+    },
+    SHEET_TO_VIEW: {
+      'Outer_Material': 'outer', 'Lining_Material': 'lining', 'Inventory': 'inventory',
+      'Color_Development': 'colorDev', 'Zippers': 'zippers'
     }
-  } catch (e) {
-    err.textContent = 'Network error: ' + e.message;
-  } finally {
-    btn.disabled = false; btn.textContent = 'Sign In';
-  }
-}
-
-function logout() {
-  currentUser = null; currentPerms = null;
-  credentials = { username: '', password: '' };
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loginUser').value = '';
-  document.getElementById('loginPass').value = '';
-}
-
-// ============================================================
-// ROLE-BASED UI
-// ============================================================
-function hasViewAccess(sheetName) {
-  if (currentUser.role === 'Super Admin') return true;
-  const av = (currentUser.allowedViews || 'ALL').trim();
-  if (av === 'ALL') return true;
-  return av.split(',').map(s => s.trim()).indexOf(sheetName) !== -1;
-}
-
-function applyRoleUI() {
-  // Hide nav items based on role and view access
-  document.querySelectorAll('.nav-item').forEach(item => {
-    const sheet = item.dataset.sheet;
-    if (sheet === 'USERS_ADMIN_ONLY' || sheet === 'LOGS_ADMIN_ONLY') {
-      item.classList.toggle('hidden', !currentPerms.manageUsers);
-    } else if (sheet && !hasViewAccess(sheet)) {
-      item.classList.add('hidden');
-    } else {
-      item.classList.remove('hidden');
-    }
-  });
-
-  // Hide Data Entry tab if user can't add
-  const entryNav = document.querySelector('.nav-item[data-view="entry"]');
-  if (entryNav) entryNav.classList.toggle('hidden', !currentPerms.add);
-
-  // Populate the entry form category dropdown with only allowed sheets
-  const sel = document.getElementById('entryCategory');
-  sel.innerHTML = '<option value="">-- Choose --</option>' +
-    Object.keys(SCHEMAS).filter(s => hasViewAccess(s)).map(s =>
-      `<option value="${s}">${s.replace(/_/g,' ')}</option>`
-    ).join('');
-}
-
-// ============================================================
-// NAVIGATION
-// ============================================================
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    if (item.classList.contains('hidden')) return;
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    item.classList.add('active');
-    const view = item.dataset.view;
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + view).classList.add('active');
-    if (view === 'logs') loadActivityLog();
-  });
-});
-
-// ============================================================
-// DATA LOADING
-// ============================================================
-async function loadAllData() {
-  toast('Loading data…');
-  const res = await api({ action: 'getAll' });
-  if (!res.success) { toast('Failed to load: ' + res.error, true); return; }
-  allData = res.data;
-  renderKPIs();
-  renderAllCharts();
-  Object.keys(SCHEMAS).forEach(s => renderTable(s));
-  if (currentPerms.manageUsers) await loadUsers();
-  toast('Data loaded');
-}
-
-// ============================================================
-// KPIs
-// ============================================================
-function renderKPIs() {
-  const grid = document.getElementById('kpiGrid');
-  const outer = allData['Outer_Material']?.rows || [];
-  const lining = allData['Lining_Material']?.rows || [];
-  const inv = allData['Inventory']?.rows || [];
-  const colorDev = allData['Color_Development']?.rows || [];
-  const zippers = allData['Zippers']?.rows || [];
-
-  const approved = colorDev.filter(r => {
-    const s = String(r.Coats_Status || '').toLowerCase();
-    return s.includes('approved') && !s.includes('not');
-  }).length;
-  const totalZipperStock = zippers.reduce((s, r) => s + (Number(r.Balance_Material) || 0), 0);
-
-  const kpis = [];
-  if (hasViewAccess('Outer_Material'))    kpis.push({ label: 'Outer Material Items', value: outer.length });
-  if (hasViewAccess('Lining_Material'))   kpis.push({ label: 'Lining Material Items', value: lining.length });
-  if (hasViewAccess('Inventory'))         kpis.push({ label: 'Inventory Records', value: inv.length });
-  if (hasViewAccess('Color_Development')) kpis.push({ label: 'Approved Colors', value: approved + ' / ' + colorDev.length });
-  if (hasViewAccess('Zippers'))           kpis.push({ label: 'Total Zipper Stock', value: totalZipperStock.toLocaleString() });
-
-  grid.innerHTML = kpis.map(k => `<div class="kpi-card"><div class="label">${k.label}</div><div class="value">${k.value}</div></div>`).join('');
-}
-
-// ============================================================
-// CHARTS
-// ============================================================
-function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
-
-function renderAllCharts() {
-  renderStockChart(); renderColorChart(); renderVendorChart();
-  renderApprovalChart(); renderZipperChart(); renderLowStockList();
-
-  // Hide dashlets the user has no data for
-  if (!hasViewAccess('Color_Development')) document.getElementById('dashlet-approval').classList.add('hidden');
-  if (!hasViewAccess('Zippers')) {
-    document.getElementById('dashlet-zipper').classList.add('hidden');
-    document.getElementById('dashlet-lowstock').classList.add('hidden');
-  }
-}
-
-function renderStockChart() {
-  destroyChart('stock');
-  const counts = {};
-  if (hasViewAccess('Outer_Material'))    counts['Outer'] = (allData['Outer_Material']?.rows || []).length;
-  if (hasViewAccess('Lining_Material'))   counts['Lining'] = (allData['Lining_Material']?.rows || []).length;
-  if (hasViewAccess('Inventory'))         counts['Inventory'] = (allData['Inventory']?.rows || []).length;
-  if (hasViewAccess('Color_Development')) counts['Color Dev'] = (allData['Color_Development']?.rows || []).length;
-  if (hasViewAccess('Zippers'))           counts['Zippers'] = (allData['Zippers']?.rows || []).length;
-  charts.stock = new Chart(document.getElementById('chart-stock'), {
-    type: 'doughnut',
-    data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: ['#e94560','#f59e0b','#10b981','#3b82f6','#8b5cf6'] }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{ position:'right' } } }
-  });
-}
-
-function renderColorChart() {
-  destroyChart('color');
-  const colorCounts = {};
-  ['Outer_Material', 'Lining_Material'].forEach(s => {
-    if (!hasViewAccess(s)) return;
-    (allData[s]?.rows || []).forEach(r => {
-      const c = String(r.Color || '').trim();
-      if (c) colorCounts[c] = (colorCounts[c] || 0) + 1;
-    });
-  });
-  if (hasViewAccess('Inventory')) {
-    (allData['Inventory']?.rows || []).forEach(r => {
-      const c = String(r.Colour_Name || '').trim();
-      if (c) colorCounts[c] = (colorCounts[c] || 0) + 1;
-    });
-  }
-  const sorted = Object.entries(colorCounts).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  charts.color = new Chart(document.getElementById('chart-color'), {
-    type: 'bar',
-    data: { labels: sorted.map(x => x[0]), datasets: [{ label: 'Frequency', data: sorted.map(x => x[1]), backgroundColor: '#e94560' }] },
-    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins:{ legend:{ display:false } } }
-  });
-}
-
-function renderVendorChart() {
-  destroyChart('vendor');
-  const vendors = {};
-  if (hasViewAccess('Inventory')) (allData['Inventory']?.rows || []).forEach(r => { const v = String(r.Vendor || 'Unknown').trim(); vendors[v] = (vendors[v] || 0) + 1; });
-  if (hasViewAccess('Zippers')) (allData['Zippers']?.rows || []).forEach(r => { const v = String(r.Vendor || 'Unknown').trim(); vendors[v] = (vendors[v] || 0) + 1; });
-  charts.vendor = new Chart(document.getElementById('chart-vendor'), {
-    type: 'pie',
-    data: { labels: Object.keys(vendors), datasets: [{ data: Object.values(vendors), backgroundColor: ['#1a1a2e','#e94560','#f59e0b','#10b981','#3b82f6','#8b5cf6','#ec4899'] }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{ position:'right' } } }
-  });
-}
-
-function renderApprovalChart() {
-  destroyChart('approval');
-  const statuses = { 'Approved': 0, 'Not Approved': 0, 'Given To Develop': 0, 'Other': 0 };
-  (allData['Color_Development']?.rows || []).forEach(r => {
-    const s = String(r.Coats_Status || '').toLowerCase();
-    if (s.includes('not approved')) statuses['Not Approved']++;
-    else if (s.includes('approved')) statuses['Approved']++;
-    else if (s.includes('develop')) statuses['Given To Develop']++;
-    else statuses['Other']++;
-  });
-  charts.approval = new Chart(document.getElementById('chart-approval'), {
-    type: 'bar',
-    data: { labels: Object.keys(statuses), datasets: [{ label: 'Count', data: Object.values(statuses), backgroundColor: ['#10b981','#ef4444','#f59e0b','#6b7280'] }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{ display:false } } }
-  });
-}
-
-function renderZipperChart() {
-  destroyChart('zipper');
-  const top = (allData['Zippers']?.rows || [])
-    .map(r => ({ code: r.Zipper_Code, qty: Number(r.Balance_Material) || 0 }))
-    .filter(r => r.qty > 0).sort((a,b) => b.qty - a.qty).slice(0,10);
-  charts.zipper = new Chart(document.getElementById('chart-zipper'), {
-    type: 'bar',
-    data: { labels: top.map(t => t.code), datasets: [{ label: 'Stock', data: top.map(t => t.qty), backgroundColor: '#3b82f6' }] },
-    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins:{ legend:{ display:false } } }
-  });
-}
-
-function renderLowStockList() {
-  const container = document.getElementById('lowStockList');
-  const lows = (allData['Zippers']?.rows || [])
-    .filter(r => { const n = Number(r.Balance_Material); return !isNaN(n) && n < 50 && n >= 0; })
-    .sort((a,b) => Number(a.Balance_Material) - Number(b.Balance_Material));
-  if (lows.length === 0) {
-    container.innerHTML = '<p style="color:var(--muted); padding:20px;">No low-stock items 🎉</p>';
-    return;
-  }
-  container.innerHTML = lows.map(r => `
-    <div style="padding:10px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between;">
-      <span>${r.Zipper_Code || '-'}</span>
-      <span class="badge ${Number(r.Balance_Material) === 0 ? 'badge-danger' : 'badge-warning'}">${r.Balance_Material}</span>
-    </div>`).join('');
-}
-
-function toggleDashlet(name, show) {
-  const el = document.getElementById('dashlet-' + name);
-  if (el) el.classList.toggle('hidden', !show);
-}
-
-// ============================================================
-// SMART ENTRY FORM
-// ============================================================
-function renderEntryForm() {
-  const cat = document.getElementById('entryCategory').value;
-  const container = document.getElementById('entryFormFields');
-  const actions = document.getElementById('entryActions');
-  if (!cat) { container.innerHTML = ''; actions.style.display = 'none'; return; }
-
-  const fields = SCHEMAS[cat];
-  container.innerHTML = '<div class="form-grid">' + fields.map(f => {
-    const type = DATE_FIELDS.includes(f) ? 'date' : (NUM_FIELDS.includes(f) ? 'number' : 'text');
-    return `<div class="form-field"><label>${f.replace(/_/g, ' ')}</label><input type="${type}" name="${f}" /></div>`;
-  }).join('') + '</div>';
-  actions.style.display = 'flex';
-}
-
-async function submitEntry() {
-  const cat = document.getElementById('entryCategory').value;
-  if (!cat) return;
-  const inputs = document.querySelectorAll('#entryFormFields input');
-  const row = {};
-  inputs.forEach(i => { row[i.name] = i.value; });
-
-  const res = await api({ action: 'addRow', sheet: cat, row: row });
-  if (res.success) { toast('Entry saved'); resetForm(); await loadAllData(); }
-  else toast('Save failed: ' + res.error, true);
-}
-
-function resetForm() {
-  document.querySelectorAll('#entryFormFields input').forEach(i => i.value = '');
-}
-
-// ============================================================
-// DATA TABLES
-// ============================================================
-function renderTable(sheetName) {
-  const container = document.getElementById('table-' + sheetName);
-  if (!container) return;
-
-  if (!hasViewAccess(sheetName)) {
-    container.innerHTML = '<div class="info-banner">You do not have access to this view. Contact your Super Admin.</div>';
-    return;
-  }
-
-  const data = allData[sheetName];
-  if (!data || !data.rows) { container.innerHTML = '<div class="loader">No data</div>'; return; }
-
-  const headers = SCHEMAS[sheetName] || data.headers;
-  const showActions = currentPerms.edit || currentPerms.delete;
-
-  container.innerHTML = `
-    <div class="table-wrap">
-      <div class="table-toolbar">
-        <input type="text" placeholder="Search…" oninput="filterTable('${sheetName}', this.value)" />
-        <span style="color:var(--muted);font-size:13px;">${data.rows.length} records</span>
-      </div>
-      <div style="overflow-x:auto; max-height:600px; overflow-y:auto;">
-      <table id="tbl-${sheetName}">
-        <thead><tr>${headers.map(h => `<th>${h.replace(/_/g,' ')}</th>`).join('')}${showActions ? '<th>Actions</th>' : ''}</tr></thead>
-        <tbody>
-          ${data.rows.map(r => `
-            <tr>
-              ${headers.map(h => `<td>${formatCell(r[h])}</td>`).join('')}
-              ${showActions ? `<td>
-                ${currentPerms.edit ? `<button class="btn-edit" onclick="openEdit('${sheetName}', ${r._rowIndex})">Edit</button>` : ''}
-                ${currentPerms.delete ? `<button class="btn-del" onclick="deleteDataRow('${sheetName}', ${r._rowIndex})">Delete</button>` : ''}
-              </td>` : ''}
-            </tr>`).join('')}
-        </tbody>
-      </table>
-      </div>
-    </div>`;
-}
-
-function formatCell(v) {
-  if (v === null || v === undefined || v === '') return '-';
-  if (v instanceof Date) return v.toLocaleDateString();
-  const str = String(v);
-  if (/^\d{4}-\d{2}-\d{2}T/.test(str)) return new Date(str).toLocaleDateString();
-  return str;
-}
-
-function filterTable(sheetName, q) {
-  const rows = document.querySelectorAll('#tbl-' + sheetName + ' tbody tr');
-  const Q = q.toLowerCase();
-  rows.forEach(r => { r.style.display = r.textContent.toLowerCase().includes(Q) ? '' : 'none'; });
-}
-
-// ============================================================
-// EDIT / DELETE DATA ROWS
-// ============================================================
-function openEdit(sheetName, rowIndex) {
-  const row = (allData[sheetName].rows || []).find(r => r._rowIndex === rowIndex);
-  if (!row) return;
-  editContext = { sheet: sheetName, rowIndex: rowIndex };
-  document.getElementById('editModalTitle').textContent = 'Edit ' + sheetName.replace(/_/g,' ');
-  const fields = SCHEMAS[sheetName];
-  document.getElementById('editModalFields').innerHTML = '<div class="form-grid">' +
-    fields.map(f => {
-      const type = DATE_FIELDS.includes(f) ? 'date' : (NUM_FIELDS.includes(f) ? 'number' : 'text');
-      let v = row[f] ?? '';
-      if (type === 'date' && /^\d{4}-\d{2}-\d{2}T/.test(String(v))) v = String(v).slice(0, 10);
-      return `<div class="form-field"><label>${f.replace(/_/g,' ')}</label>
-              <input type="${type}" name="${f}" value="${String(v).replace(/"/g,'&quot;')}" /></div>`;
-    }).join('') + '</div>';
-  document.getElementById('editModal').classList.add('active');
-}
-
-async function saveEdit() {
-  const inputs = document.querySelectorAll('#editModalFields input');
-  const row = {};
-  inputs.forEach(i => { row[i.name] = i.value; });
-  const res = await api({ action: 'updateRow', sheet: editContext.sheet, rowIndex: editContext.rowIndex, row: row });
-  if (res.success) { toast('Updated'); closeModal('editModal'); await loadAllData(); }
-  else toast('Update failed: ' + res.error, true);
-}
-
-async function deleteDataRow(sheetName, rowIndex) {
-  if (!confirm('Delete this row?')) return;
-  const res = await api({ action: 'deleteRow', sheet: sheetName, rowIndex: rowIndex });
-  if (res.success) { toast('Deleted'); await loadAllData(); }
-  else toast('Delete failed: ' + res.error, true);
-}
-
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-// ============================================================
-// USER MANAGEMENT
-// ============================================================
-async function loadUsers() {
-  const res = await api({ action: 'getUsers' });
-  if (!res.success) { toast(res.error, true); return; }
-  const container = document.getElementById('usersTable');
-  container.innerHTML = `
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Username</th><th>Role</th><th>Allowed Views</th><th>Created</th><th>Actions</th></tr></thead>
-        <tbody>
-          ${(res.rows || []).map(u => `
-            <tr>
-              <td><strong>${u.Username}</strong></td>
-              <td><span class="badge ${u.Role === 'Super Admin' ? 'badge-danger' : u.Role === 'Admin' ? 'badge-info' : u.Role === 'Data Entry' ? 'badge-warning' : 'badge-success'}">${u.Role}</span></td>
-              <td style="font-size:12px;">${formatViews(u.Allowed_Views)}</td>
-              <td>${formatCell(u.Created_Date)}</td>
-              <td>
-                <button class="btn-edit" onclick='openEditUser(${JSON.stringify(u).replace(/'/g, "&#39;")})'>Edit</button>
-                <button class="btn-del" onclick="delUser(${u._rowIndex}, '${u.Username}')">Delete</button>
-              </td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>`;
-}
-
-function formatViews(v) {
-  if (!v || v === 'ALL') return '<span class="badge badge-info">ALL</span>';
-  return String(v).split(',').map(s => `<span class="badge badge-success" style="margin-right:3px;">${s.trim().replace(/_/g,' ')}</span>`).join('');
-}
-
-function openUserModal() {
-  userEditContext = null;
-  document.getElementById('userModalTitle').textContent = 'Add New User';
-  document.getElementById('userSaveBtn').textContent = 'Add User';
-  document.getElementById('newUser').value = '';
-  document.getElementById('newUser').disabled = false;
-  document.getElementById('newPass').value = '';
-  document.getElementById('passHint').textContent = '';
-  document.getElementById('newRole').value = 'Viewer';
-  document.querySelectorAll('#viewsCheckboxes input').forEach(cb => cb.checked = false);
-  document.getElementById('cb-ALL').checked = true;
-  toggleAllViews(document.getElementById('cb-ALL'));
-  updateAccessHint();
-  document.getElementById('userModal').classList.add('active');
-}
-
-function openEditUser(user) {
-  userEditContext = user;
-  document.getElementById('userModalTitle').textContent = 'Edit User: ' + user.Username;
-  document.getElementById('userSaveBtn').textContent = 'Save Changes';
-  document.getElementById('newUser').value = user.Username;
-  document.getElementById('newUser').disabled = true;
-  document.getElementById('newPass').value = '';
-  document.getElementById('passHint').textContent = '(leave blank to keep current)';
-  document.getElementById('newRole').value = user.Role;
-
-  document.querySelectorAll('#viewsCheckboxes input').forEach(cb => cb.checked = false);
-  const av = String(user.Allowed_Views || 'ALL').trim();
-  if (av === 'ALL' || av === '') {
-    document.getElementById('cb-ALL').checked = true;
-    toggleAllViews(document.getElementById('cb-ALL'));
-  } else {
-    av.split(',').map(s => s.trim()).forEach(v => {
-      const cb = document.querySelector(`#viewsCheckboxes input[value="${v}"]`);
-      if (cb) cb.checked = true;
-    });
-  }
-  updateAccessHint();
-  document.getElementById('userModal').classList.add('active');
-}
-
-function toggleAllViews(allCb) {
-  document.querySelectorAll('.view-cb').forEach(cb => {
-    cb.disabled = allCb.checked;
-    if (allCb.checked) cb.checked = false;
-  });
-}
-
-function updateAccessHint() {
-  const role = document.getElementById('newRole').value;
-  const hints = {
-    'Super Admin': '— Full access, manages all users',
-    'Admin': '— Can edit/delete data, cannot manage users',
-    'Data Entry': '— Can only add new rows, no edit/delete',
-    'Viewer': '— Read-only access'
   };
-  document.getElementById('accessHint').textContent = hints[role] || '';
-}
 
-async function saveUser() {
-  const u = document.getElementById('newUser').value.trim();
-  const p = document.getElementById('newPass').value;
-  const r = document.getElementById('newRole').value;
+  /* ==========================================================
+     STATE
+     ========================================================== */
+  const state = {
+    user: null,
+    perms: null,
+    credentials: { username: '', password: '' },
+    data: {},
+    charts: {},
+    editContext: null,
+    userEditContext: null,
+    bulkParsedRows: null,
+    bulkValidRows: null
+  };
 
-  let allowedViews;
-  if (document.getElementById('cb-ALL').checked) {
-    allowedViews = 'ALL';
-  } else {
-    const checked = Array.from(document.querySelectorAll('.view-cb:checked')).map(cb => cb.value);
-    if (checked.length === 0) { toast('Select at least one view (or ALL)', true); return; }
-    allowedViews = checked.join(',');
+  /* ==========================================================
+     API
+     ========================================================== */
+  const api = {
+    async call(payload) {
+      payload.username = state.credentials.username;
+      payload.password = state.credentials.password;
+      const res = await fetch(config.APPS_SCRIPT_URL, {
+        method: 'POST', body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'text/plain' }
+      });
+      return await res.json();
+    }
+  };
+
+  /* ==========================================================
+     UI — toast, modals, formatters
+     ========================================================== */
+  const ui = {
+    toast(msg, type) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + (type || 'success');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    },
+    openModal(id) { document.getElementById(id).classList.add('active'); },
+    closeModal(id) { document.getElementById(id).classList.remove('active'); },
+    formatCell(v) {
+      if (v === null || v === undefined || v === '') return '<span style="color:var(--muted);">—</span>';
+      if (v instanceof Date) return v.toLocaleDateString();
+      const s = String(v);
+      if (/^\d{4}-\d{2}-\d{2}T/.test(s)) return new Date(s).toLocaleDateString();
+      return s;
+    },
+    formatViews(v) {
+      if (!v || v === 'ALL') return '<span class="badge badge-info">ALL VIEWS</span>';
+      return String(v).split(',').map(s => `<span class="badge badge-success" style="margin-right:3px;">${s.trim().replace(/_/g,' ')}</span>`).join('');
+    },
+    roleBadge(role) {
+      const m = { 'Super Admin': 'badge-danger', 'Admin': 'badge-info', 'Data Entry': 'badge-warning', 'Viewer': 'badge-success' };
+      return `<span class="badge ${m[role] || 'badge-neutral'}">${role}</span>`;
+    }
+  };
+
+  /* ==========================================================
+     AUTH — login, logout, permission checks
+     ========================================================== */
+  const auth = {
+    async login() {
+      const u = document.getElementById('loginUser').value.trim();
+      const p = document.getElementById('loginPass').value;
+      const btn = document.getElementById('loginBtn');
+      const err = document.getElementById('loginError');
+      err.textContent = '';
+      if (!u || !p) { err.textContent = 'Enter both fields'; return; }
+      btn.disabled = true; btn.textContent = 'Signing in…';
+      try {
+        state.credentials = { username: u, password: p };
+        const res = await api.call({ action: 'login' });
+        if (res.success) {
+          state.user = res.user; state.perms = res.permissions;
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('app').style.display = 'block';
+          document.getElementById('userName').textContent = state.user.username;
+          document.getElementById('userInitial').textContent = state.user.username[0].toUpperCase();
+          document.getElementById('roleBadge').textContent = state.user.role;
+          auth.applyRoleUI();
+          await dashboard.loadAll();
+        } else {
+          state.credentials = { username: '', password: '' };
+          err.textContent = res.error || 'Login failed';
+        }
+      } catch (e) {
+        err.textContent = 'Network error: ' + e.message;
+      } finally {
+        btn.disabled = false; btn.textContent = 'Enter';
+      }
+    },
+    logout() {
+      state.user = null; state.perms = null;
+      state.credentials = { username: '', password: '' };
+      Object.keys(state.charts).forEach(k => state.charts[k].destroy());
+      state.charts = {};
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('loginUser').value = '';
+      document.getElementById('loginPass').value = '';
+    },
+    hasView(sheetName) {
+      if (state.user.role === 'Super Admin') return true;
+      const av = (state.user.allowedViews || 'ALL').trim();
+      if (av === 'ALL') return true;
+      return av.split(',').map(s => s.trim()).indexOf(sheetName) !== -1;
+    },
+    applyRoleUI() {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        const sheet = item.dataset.sheet;
+        if (sheet === 'USERS_ADMIN_ONLY' || sheet === 'LOGS_ADMIN_ONLY') {
+          item.classList.toggle('hidden', !state.perms.manageUsers);
+        } else if (sheet && !auth.hasView(sheet)) {
+          item.classList.add('hidden');
+        } else item.classList.remove('hidden');
+      });
+      // Add Entry / Bulk Upload visible only if user can add
+      ['entry', 'bulk'].forEach(v => {
+        const n = document.querySelector(`.nav-item[data-view="${v}"]`);
+        if (n) n.classList.toggle('hidden', !state.perms.add);
+      });
+      // Populate entry form categories
+      const cats = Object.keys(config.SCHEMAS).filter(s => auth.hasView(s));
+      ['entryCategory', 'bulkCategory'].forEach(id => {
+        const sel = document.getElementById(id);
+        sel.innerHTML = '<option value="">— Choose —</option>' + cats.map(s =>
+          `<option value="${s}">${s.replace(/_/g, ' ')}</option>`).join('');
+      });
+    }
+  };
+
+  /* ==========================================================
+     DASHBOARD — KPIs + charts
+     ========================================================== */
+  const dashboard = {
+    async loadAll() {
+      ui.toast('Loading…', 'success');
+      const res = await api.call({ action: 'getAll' });
+      if (!res.success) { ui.toast('Load failed: ' + res.error, 'error'); return; }
+      state.data = res.data;
+      dashboard.renderKPIs();
+      dashboard.renderCharts();
+      Object.keys(config.SCHEMAS).forEach(s => tables.render(s));
+      if (state.perms.manageUsers) await users.load();
+      ui.toast('Data loaded', 'success');
+    },
+    renderKPIs() {
+      const grid = document.getElementById('kpiGrid');
+      const d = state.data;
+      const colorDev = d['Color_Development']?.rows || [];
+      const approved = colorDev.filter(r => {
+        const s = String(r.Coats_Status || '').toLowerCase();
+        return s.includes('approved') && !s.includes('not');
+      }).length;
+      const zippers = d['Zippers']?.rows || [];
+      const zStock = zippers.reduce((s, r) => s + (Number(r.Balance_Material) || 0), 0);
+
+      const kpis = [];
+      if (auth.hasView('Outer_Material'))    kpis.push({ label: 'Outer Material', value: (d['Outer_Material']?.rows || []).length, sub: 'distinct items' });
+      if (auth.hasView('Lining_Material'))   kpis.push({ label: 'Lining Material', value: (d['Lining_Material']?.rows || []).length, sub: 'distinct items' });
+      if (auth.hasView('Inventory'))         kpis.push({ label: 'Inventory', value: (d['Inventory']?.rows || []).length, sub: 'records' });
+      if (auth.hasView('Color_Development')) kpis.push({ label: 'Colors Approved', value: approved + ' / ' + colorDev.length, sub: 'in development pipeline' });
+      if (auth.hasView('Zippers'))           kpis.push({ label: 'Zipper Stock', value: zStock.toLocaleString(), sub: 'units in balance' });
+
+      grid.innerHTML = kpis.map(k => `
+        <div class="kpi-card">
+          <div class="label">${k.label}</div>
+          <div class="value">${k.value}</div>
+          <div class="sub">${k.sub}</div>
+        </div>`).join('');
+    },
+    renderCharts() {
+      Chart.defaults.color = '#d4cbb8';
+      Chart.defaults.borderColor = '#3a2d24';
+      Chart.defaults.font.family = 'Inter Tight';
+
+      dashboard._stock(); dashboard._color(); dashboard._vendor();
+      dashboard._approval(); dashboard._zipper(); dashboard._lowstock();
+
+      if (!auth.hasView('Color_Development')) document.getElementById('dashlet-approval').classList.add('hidden');
+      if (!auth.hasView('Zippers')) {
+        document.getElementById('dashlet-zipper').classList.add('hidden');
+        document.getElementById('dashlet-lowstock').classList.add('hidden');
+      }
+
+      // Hook up dashlet toggles
+      ['stock','color','vendor','approval','zipper','lowstock'].forEach(n => {
+        document.getElementById('dl-' + n).onchange = e => {
+          document.getElementById('dashlet-' + n).classList.toggle('hidden', !e.target.checked);
+        };
+      });
+    },
+    _destroy(k) { if (state.charts[k]) { state.charts[k].destroy(); delete state.charts[k]; } },
+    _stock() {
+      dashboard._destroy('stock');
+      const counts = {};
+      if (auth.hasView('Outer_Material'))    counts['Outer'] = (state.data['Outer_Material']?.rows || []).length;
+      if (auth.hasView('Lining_Material'))   counts['Lining'] = (state.data['Lining_Material']?.rows || []).length;
+      if (auth.hasView('Inventory'))         counts['Inventory'] = (state.data['Inventory']?.rows || []).length;
+      if (auth.hasView('Color_Development')) counts['Color Dev'] = (state.data['Color_Development']?.rows || []).length;
+      if (auth.hasView('Zippers'))           counts['Zippers'] = (state.data['Zippers']?.rows || []).length;
+      state.charts.stock = new Chart(document.getElementById('chart-stock'), {
+        type: 'doughnut',
+        data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: ['#b08454','#c89971','#d4a574','#e8c896','#8a7e6f'], borderColor: '#211a14', borderWidth: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 12 }, padding: 14, usePointStyle: true } } } }
+      });
+    },
+    _color() {
+      dashboard._destroy('color');
+      const counts = {};
+      ['Outer_Material', 'Lining_Material'].forEach(s => {
+        if (!auth.hasView(s)) return;
+        (state.data[s]?.rows || []).forEach(r => {
+          const c = String(r.Color || '').trim();
+          if (c) counts[c] = (counts[c] || 0) + 1;
+        });
+      });
+      if (auth.hasView('Inventory')) (state.data['Inventory']?.rows || []).forEach(r => {
+        const c = String(r.Colour_Name || '').trim();
+        if (c) counts[c] = (counts[c] || 0) + 1;
+      });
+      const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+      state.charts.color = new Chart(document.getElementById('chart-color'), {
+        type: 'bar',
+        data: { labels: sorted.map(x => x[0]), datasets: [{ label: 'Frequency', data: sorted.map(x => x[1]), backgroundColor: '#b08454', borderRadius: 3 }] },
+        options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#3a2d24' } }, y: { grid: { display: false } } } }
+      });
+    },
+    _vendor() {
+      dashboard._destroy('vendor');
+      const v = {};
+      if (auth.hasView('Inventory')) (state.data['Inventory']?.rows || []).forEach(r => { const x = String(r.Vendor || 'Unknown').trim(); v[x] = (v[x] || 0) + 1; });
+      if (auth.hasView('Zippers')) (state.data['Zippers']?.rows || []).forEach(r => { const x = String(r.Vendor || 'Unknown').trim(); v[x] = (v[x] || 0) + 1; });
+      state.charts.vendor = new Chart(document.getElementById('chart-vendor'), {
+        type: 'pie',
+        data: { labels: Object.keys(v), datasets: [{ data: Object.values(v), backgroundColor: ['#b08454','#d4a574','#e8c896','#c89971','#8a7e6f','#7a9968','#c4574b'], borderColor: '#211a14', borderWidth: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 12 } } } }
+      });
+    },
+    _approval() {
+      dashboard._destroy('approval');
+      const st = { 'Approved': 0, 'Not Approved': 0, 'Given To Develop': 0, 'Other': 0 };
+      (state.data['Color_Development']?.rows || []).forEach(r => {
+        const s = String(r.Coats_Status || '').toLowerCase();
+        if (s.includes('not approved')) st['Not Approved']++;
+        else if (s.includes('approved')) st['Approved']++;
+        else if (s.includes('develop')) st['Given To Develop']++;
+        else st['Other']++;
+      });
+      state.charts.approval = new Chart(document.getElementById('chart-approval'), {
+        type: 'bar',
+        data: { labels: Object.keys(st), datasets: [{ label: 'Count', data: Object.values(st), backgroundColor: ['#7a9968','#c4574b','#d4a574','#8a7e6f'], borderRadius: 3 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: '#3a2d24' } } } }
+      });
+    },
+    _zipper() {
+      dashboard._destroy('zipper');
+      const top = (state.data['Zippers']?.rows || [])
+        .map(r => ({ code: r.Zipper_Code, qty: Number(r.Balance_Material) || 0 }))
+        .filter(r => r.qty > 0).sort((a,b) => b.qty - a.qty).slice(0,10);
+      state.charts.zipper = new Chart(document.getElementById('chart-zipper'), {
+        type: 'bar',
+        data: { labels: top.map(t => t.code), datasets: [{ label: 'Stock', data: top.map(t => t.qty), backgroundColor: '#d4a574', borderRadius: 3 }] },
+        options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#3a2d24' } }, y: { grid: { display: false } } } }
+      });
+    },
+    _lowstock() {
+      const c = document.getElementById('lowStockList');
+      const lows = (state.data['Zippers']?.rows || [])
+        .filter(r => { const n = Number(r.Balance_Material); return !isNaN(n) && n < 50 && n >= 0; })
+        .sort((a,b) => Number(a.Balance_Material) - Number(b.Balance_Material));
+      if (lows.length === 0) {
+        c.innerHTML = '<div class="empty-state"><h4>All stocked</h4><p>No items below threshold.</p></div>';
+        return;
+      }
+      c.innerHTML = lows.map(r => `
+        <div style="padding:11px 0; border-bottom:1px solid var(--leather-line); display:flex; justify-content:space-between; align-items:center;">
+          <span style="color:var(--ivory-dim); font-size:13px;">${r.Zipper_Code || '—'}</span>
+          <span class="badge ${Number(r.Balance_Material) === 0 ? 'badge-danger' : 'badge-warning'}">${r.Balance_Material}</span>
+        </div>`).join('');
+    }
+  };
+
+  /* ==========================================================
+     ENTRY — adaptive form
+     ========================================================== */
+  const entry = {
+    render() {
+      const cat = document.getElementById('entryCategory').value;
+      const container = document.getElementById('entryFormFields');
+      const actions = document.getElementById('entryActions');
+      const recent = document.getElementById('entryRecent');
+      if (!cat) { container.innerHTML = ''; actions.style.display = 'none'; recent.style.display = 'none'; return; }
+      const fields = config.SCHEMAS[cat];
+      const required = config.REQUIRED_FIELDS[cat] || [];
+      container.innerHTML = '<div class="form-grid">' + fields.map(f => entry._fieldHtml(f, required.includes(f))).join('') + '</div>';
+      actions.style.display = 'flex';
+      entry._renderRecent(cat);
+    },
+    _fieldHtml(f, isReq) {
+      const lbl = f.replace(/_/g, ' ') + (isReq ? ' *' : '');
+      if (config.ENUM_FIELDS[f]) {
+        return `<div class="form-field"><label>${lbl}</label>
+          <select name="${f}"><option value="">— Select —</option>${config.ENUM_FIELDS[f].map(o => `<option>${o}</option>`).join('')}</select></div>`;
+      }
+      const type = config.DATE_FIELDS.includes(f) ? 'date' : (config.NUM_FIELDS.includes(f) ? 'number' : 'text');
+      return `<div class="form-field"><label>${lbl}</label><input type="${type}" name="${f}" /></div>`;
+    },
+    _renderRecent(cat) {
+      const list = (state.data[cat]?.rows || []).slice(-5).reverse();
+      const c = document.getElementById('entryRecent');
+      if (list.length === 0) { c.style.display = 'none'; return; }
+      c.style.display = 'block';
+      document.getElementById('entryRecentList').innerHTML = list.map(r => {
+        const fields = config.SCHEMAS[cat];
+        const main = r[fields[1]] || r[fields[0]] || '—';
+        const sub = fields.slice(2,4).map(f => r[f]).filter(Boolean).join(' · ');
+        return `<div class="recent-row"><div><div class="what">${main}</div><div class="when">${sub}</div></div><span class="badge badge-info">Row ${r._rowIndex}</span></div>`;
+      }).join('');
+    },
+    async submit() {
+      const cat = document.getElementById('entryCategory').value;
+      if (!cat) return;
+      const required = config.REQUIRED_FIELDS[cat] || [];
+      const row = {};
+      let missing = null;
+      document.querySelectorAll('#entryFormFields [name]').forEach(i => {
+        row[i.name] = i.value;
+        if (required.includes(i.name) && !i.value.trim()) missing = i.name;
+      });
+      if (missing) { ui.toast('Required: ' + missing.replace(/_/g, ' '), 'error'); return; }
+      const res = await api.call({ action: 'addRow', sheet: cat, row });
+      if (res.success) { ui.toast('Entry saved'); entry.reset(); await dashboard.loadAll(); entry._renderRecent(cat); }
+      else ui.toast('Save failed: ' + res.error, 'error');
+    },
+    reset() { document.querySelectorAll('#entryFormFields [name]').forEach(i => i.value = ''); }
+  };
+
+  /* ==========================================================
+     BULK UPLOAD — parse Excel/CSV, validate, batch import
+     ========================================================== */
+  const bulk = {
+    init() {
+      const zone = document.getElementById('dropZone');
+      ['dragenter','dragover'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('dragover'); }));
+      ['dragleave','drop'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.remove('dragover'); }));
+      zone.addEventListener('drop', ev => { if (ev.dataTransfer.files[0]) bulk.handleFile(ev.dataTransfer.files[0]); });
+    },
+    onCategoryChange() {
+      const cat = document.getElementById('bulkCategory').value;
+      document.getElementById('bulkTemplateRow').style.display = cat ? 'block' : 'none';
+      document.getElementById('bulkResults').innerHTML = '';
+      state.bulkParsedRows = null; state.bulkValidRows = null;
+    },
+    downloadTemplate() {
+      const cat = document.getElementById('bulkCategory').value;
+      if (!cat) return;
+      const headers = config.SCHEMAS[cat];
+      const required = config.REQUIRED_FIELDS[cat] || [];
+      const ws = XLSX.utils.aoa_to_sheet([headers, headers.map(h => required.includes(h) ? '(required)' : '(optional)')]);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, cat);
+      XLSX.writeFile(wb, cat + '_template.xlsx');
+    },
+    async handleFile(file) {
+      const cat = document.getElementById('bulkCategory').value;
+      if (!cat) { ui.toast('Choose a category first', 'error'); return; }
+      if (!file) return;
+      const out = document.getElementById('bulkResults');
+      out.innerHTML = '<div class="empty-state"><h4>Reading file…</h4></div>';
+
+      try {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: 'array', cellDates: true });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '', raw: false });
+        if (rows.length === 0) { out.innerHTML = '<div class="info-banner">The file is empty.</div>'; return; }
+        state.bulkParsedRows = rows;
+        bulk.validate(cat, rows);
+      } catch (e) {
+        out.innerHTML = '<div class="info-banner" style="border-color:var(--danger);"><strong>Could not read file:</strong> ' + e.message + '</div>';
+      }
+    },
+    validate(cat, rows) {
+      const schema = config.SCHEMAS[cat];
+      const required = config.REQUIRED_FIELDS[cat] || [];
+      const dateFields = config.DATE_FIELDS;
+      const numFields = config.NUM_FIELDS;
+      const enumFields = config.ENUM_FIELDS;
+
+      const errors = [];
+      const valid = [];
+      const fileHeaders = Object.keys(rows[0]);
+      const missingHeaders = schema.filter(h => !fileHeaders.includes(h));
+
+      rows.forEach((row, idx) => {
+        const rowNum = idx + 2; // +1 for header, +1 for 0-index
+        const rowErrors = [];
+        const cleaned = {};
+
+        schema.forEach(field => {
+          let v = row[field];
+          if (v === undefined) v = '';
+          v = String(v).trim();
+
+          if (required.includes(field) && !v) {
+            rowErrors.push(`missing required "${field}"`);
+            return;
+          }
+          if (v && numFields.includes(field) && isNaN(Number(v))) {
+            rowErrors.push(`"${field}" must be a number (got "${v}")`);
+            return;
+          }
+          if (v && enumFields[field] && !enumFields[field].includes(v)) {
+            rowErrors.push(`"${field}" must be one of: ${enumFields[field].join(', ')} (got "${v}")`);
+            return;
+          }
+          if (v && dateFields.includes(field)) {
+            const d = new Date(v);
+            if (isNaN(d.getTime())) { rowErrors.push(`"${field}" is not a valid date (got "${v}")`); return; }
+            v = d.toISOString().slice(0,10);
+          }
+          cleaned[field] = v;
+        });
+
+        if (rowErrors.length > 0) errors.push({ row: rowNum, errors: rowErrors });
+        else valid.push(cleaned);
+      });
+
+      state.bulkValidRows = valid;
+      bulk.renderValidation(cat, rows.length, valid.length, errors, missingHeaders);
+    },
+    renderValidation(cat, total, validCount, errors, missingHeaders) {
+      const out = document.getElementById('bulkResults');
+      const errCount = errors.length;
+      out.innerHTML = `
+        ${missingHeaders.length > 0 ? `
+          <div class="info-banner" style="border-color:var(--danger);">
+            <strong>Missing columns in your file:</strong> ${missingHeaders.join(', ')}.
+            These will be saved as blank. <span class="helper-link" onclick="App.bulk.downloadTemplate()">Download a template</span> with the right structure.
+          </div>` : ''}
+        <div class="validation-summary">
+          <div class="stat-pill"><div class="num">${total}</div><div class="lbl">Rows Read</div></div>
+          <div class="stat-pill ok"><div class="num">${validCount}</div><div class="lbl">Valid</div></div>
+          <div class="stat-pill warn"><div class="num">${errCount}</div><div class="lbl">With Errors</div></div>
+        </div>
+        ${errCount > 0 ? `
+          <h4 style="font-family:var(--font-display); margin-bottom:10px;">Validation Errors</h4>
+          <div class="error-list">
+            ${errors.slice(0,100).map(e => `
+              <div class="error-item">
+                <span class="row-num">Row ${e.row}</span>
+                <span class="err-text">${e.errors.join('; ')}</span>
+              </div>`).join('')}
+            ${errors.length > 100 ? `<div class="error-item" style="color:var(--muted);">...and ${errors.length - 100} more.</div>` : ''}
+          </div>
+          <p style="color:var(--muted); font-size:12px; margin-top:8px;">Fix the errors in your file and re-upload, or proceed to import only the valid rows.</p>
+        ` : ''}
+        <div class="form-actions">
+          ${validCount > 0 ? `<button class="btn-primary" onclick="App.bulk.commit()">Import ${validCount} Valid Row${validCount > 1 ? 's' : ''}</button>` : ''}
+          <button class="btn-secondary" onclick="App.bulk.reset()">Reset</button>
+        </div>`;
+    },
+    async commit() {
+      const cat = document.getElementById('bulkCategory').value;
+      if (!state.bulkValidRows || state.bulkValidRows.length === 0) return;
+      const out = document.getElementById('bulkResults');
+      out.innerHTML += '<div style="margin-top:16px; color:var(--brass);">Importing…</div>';
+
+      // Chunk to avoid Apps Script timeouts on huge files
+      const chunkSize = 200;
+      let imported = 0;
+      for (let i = 0; i < state.bulkValidRows.length; i += chunkSize) {
+        const chunk = state.bulkValidRows.slice(i, i + chunkSize);
+        const res = await api.call({ action: 'bulkImport', sheet: cat, rows: chunk });
+        if (!res.success) { ui.toast('Import error at chunk ' + (i/chunkSize+1) + ': ' + res.error, 'error'); break; }
+        imported += res.imported;
+      }
+      ui.toast(`Imported ${imported} rows into ${cat.replace(/_/g, ' ')}`);
+      bulk.reset();
+      await dashboard.loadAll();
+    },
+    reset() {
+      document.getElementById('bulkFile').value = '';
+      document.getElementById('bulkResults').innerHTML = '';
+      state.bulkParsedRows = null; state.bulkValidRows = null;
+    }
+  };
+
+  /* ==========================================================
+     TABLES — per-category data view with edit/delete + recent
+     ========================================================== */
+  const tables = {
+    render(sheetName) {
+      const container = document.getElementById('page-' + sheetName);
+      if (!container) return;
+      if (!auth.hasView(sheetName)) {
+        container.innerHTML = `
+          <div class="page-header">
+            <h1 class="page-title">${sheetName.replace(/_/g, ' ')}</h1>
+          </div>
+          <div class="info-banner">You don't have access to this view. Contact your Super Admin to request access.</div>`;
+        return;
+      }
+      const data = state.data[sheetName];
+      if (!data || !data.rows) { container.innerHTML = '<div class="empty-state"><h4>No data</h4></div>'; return; }
+
+      const headers = config.SCHEMAS[sheetName] || data.headers;
+      const showActions = state.perms.edit || state.perms.delete;
+      const titleParts = sheetName.split('_');
+      const lastWord = titleParts.pop();
+      const firstPart = titleParts.join(' ');
+
+      container.innerHTML = `
+        <div class="page-header">
+          <div class="page-eyebrow">Catalogue</div>
+          <h1 class="page-title">${firstPart} <em>${lastWord}</em></h1>
+          <p class="page-subtitle">${data.rows.length} record${data.rows.length === 1 ? '' : 's'} on file.</p>
+        </div>
+        <div class="table-card">
+          <div class="table-toolbar">
+            <input type="text" placeholder="Search…" oninput="App.tables.filter('${sheetName}', this.value)" />
+            <span class="toolbar-meta">${data.rows.length} records</span>
+            <div class="toolbar-actions">
+              ${state.perms.add ? `<button class="btn-ghost" onclick="App.tables.quickAdd('${sheetName}')">+ Quick Add</button>` : ''}
+              <button class="btn-ghost" onclick="App.tables.exportCsv('${sheetName}')">⬇ Export CSV</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table id="tbl-${sheetName}">
+              <thead><tr>${headers.map(h => `<th>${h.replace(/_/g, ' ')}</th>`).join('')}${showActions ? '<th>Actions</th>' : ''}</tr></thead>
+              <tbody>
+                ${data.rows.map(r => `
+                  <tr>
+                    ${headers.map(h => `<td>${ui.formatCell(r[h])}</td>`).join('')}
+                    ${showActions ? `<td>
+                      ${state.perms.edit ? `<button class="btn-edit" onclick="App.tables.openEdit('${sheetName}', ${r._rowIndex})">Edit</button>` : ''}
+                      ${state.perms.delete ? `<button class="btn-del" onclick="App.tables.del('${sheetName}', ${r._rowIndex})">Del</button>` : ''}
+                    </td>` : ''}
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        ${tables._recentSection(sheetName)}
+      `;
+    },
+    _recentSection(sheetName) {
+      const rows = (state.data[sheetName]?.rows || []).slice(-8).reverse();
+      if (rows.length === 0) return '';
+      const headers = config.SCHEMAS[sheetName];
+      return `
+        <div class="recent-section">
+          <h3>Most Recent Entries</h3>
+          <div class="recent-list">
+            ${rows.map(r => {
+              const main = r[headers[1]] || r[headers[0]] || '—';
+              const sub = headers.slice(2,5).map(f => r[f]).filter(Boolean).join(' · ');
+              return `<div class="recent-row">
+                <div><div class="what"><strong>${main}</strong> ${sub ? `<span style="color:var(--muted);"> — ${sub}</span>` : ''}</div></div>
+                <span class="badge badge-neutral">Row ${r._rowIndex}</span>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+    },
+    filter(sheetName, q) {
+      const Q = q.toLowerCase();
+      document.querySelectorAll('#tbl-' + sheetName + ' tbody tr').forEach(r => {
+        r.style.display = r.textContent.toLowerCase().includes(Q) ? '' : 'none';
+      });
+    },
+    quickAdd(sheetName) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelector('.nav-item[data-view="entry"]').classList.add('active');
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-entry').classList.add('active');
+      document.getElementById('entryCategory').value = sheetName;
+      entry.render();
+    },
+    exportCsv(sheetName) {
+      const data = state.data[sheetName];
+      if (!data) return;
+      const headers = config.SCHEMAS[sheetName];
+      const csv = [headers.join(',')].concat(
+        data.rows.map(r => headers.map(h => `"${String(r[h] ?? '').replace(/"/g,'""')}"`).join(','))
+      ).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = sheetName + '_export.csv';
+      a.click();
+    },
+    openEdit(sheetName, rowIndex) {
+      const row = (state.data[sheetName].rows || []).find(r => r._rowIndex === rowIndex);
+      if (!row) return;
+      state.editContext = { sheet: sheetName, rowIndex };
+      document.getElementById('editModalTitle').textContent = 'Edit ' + sheetName.replace(/_/g, ' ');
+      const fields = config.SCHEMAS[sheetName];
+      document.getElementById('editModalFields').innerHTML = '<div class="form-grid">' + fields.map(f => {
+        let v = row[f] ?? '';
+        if (config.DATE_FIELDS.includes(f) && /^\d{4}-\d{2}-\d{2}T/.test(String(v))) v = String(v).slice(0, 10);
+        if (config.ENUM_FIELDS[f]) {
+          return `<div class="form-field"><label>${f.replace(/_/g,' ')}</label>
+            <select name="${f}">${config.ENUM_FIELDS[f].map(o => `<option ${o===v?'selected':''}>${o}</option>`).join('')}</select></div>`;
+        }
+        const type = config.DATE_FIELDS.includes(f) ? 'date' : (config.NUM_FIELDS.includes(f) ? 'number' : 'text');
+        return `<div class="form-field"><label>${f.replace(/_/g,' ')}</label>
+          <input type="${type}" name="${f}" value="${String(v).replace(/"/g,'&quot;')}" /></div>`;
+      }).join('') + '</div>';
+      ui.openModal('editModal');
+    },
+    async saveEdit() {
+      const row = {};
+      document.querySelectorAll('#editModalFields [name]').forEach(i => row[i.name] = i.value);
+      const res = await api.call({ action: 'updateRow', sheet: state.editContext.sheet, rowIndex: state.editContext.rowIndex, row });
+      if (res.success) { ui.toast('Updated'); ui.closeModal('editModal'); await dashboard.loadAll(); }
+      else ui.toast('Update failed: ' + res.error, 'error');
+    },
+    async del(sheetName, rowIndex) {
+      if (!confirm('Delete this row? This cannot be undone.')) return;
+      const res = await api.call({ action: 'deleteRow', sheet: sheetName, rowIndex });
+      if (res.success) { ui.toast('Deleted'); await dashboard.loadAll(); }
+      else ui.toast('Delete failed: ' + res.error, 'error');
+    }
+  };
+
+  /* ==========================================================
+     USERS
+     ========================================================== */
+  const users = {
+    async load() {
+      const res = await api.call({ action: 'getUsers' });
+      if (!res.success) { ui.toast(res.error, 'error'); return; }
+      const c = document.getElementById('usersTable');
+      c.innerHTML = `
+        <div class="table-card">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Username</th><th>Role</th><th>Allowed Views</th><th>Created</th><th>Actions</th></tr></thead>
+              <tbody>
+                ${(res.rows || []).map(u => `
+                  <tr>
+                    <td><strong style="color:var(--ivory);">${u.Username}</strong></td>
+                    <td>${ui.roleBadge(u.Role)}</td>
+                    <td>${ui.formatViews(u.Allowed_Views)}</td>
+                    <td>${ui.formatCell(u.Created_Date)}</td>
+                    <td>
+                      <button class="btn-edit" onclick='App.users.openEdit(${JSON.stringify(u).replace(/'/g, "&#39;")})'>Edit</button>
+                      <button class="btn-del" onclick="App.users.del(${u._rowIndex}, '${u.Username}')">Delete</button>
+                    </td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+    },
+    openCreate() {
+      state.userEditContext = null;
+      document.getElementById('userModalTitle').textContent = 'Add User';
+      document.getElementById('userModalSub').textContent = 'Create credentials and choose access scope.';
+      document.getElementById('userSaveBtn').textContent = 'Add User';
+      document.getElementById('newUser').value = '';
+      document.getElementById('newUser').disabled = false;
+      document.getElementById('newPass').value = '';
+      document.getElementById('passHint').textContent = '';
+      document.getElementById('newRole').value = 'Viewer';
+      document.querySelectorAll('#viewsCheckboxes input').forEach(cb => cb.checked = false);
+      document.getElementById('cb-ALL').checked = true;
+      users.toggleAll(document.getElementById('cb-ALL'));
+      users.updateHint();
+      ui.openModal('userModal');
+    },
+    openEdit(u) {
+      state.userEditContext = u;
+      document.getElementById('userModalTitle').textContent = 'Edit ' + u.Username;
+      document.getElementById('userModalSub').textContent = 'Modify role or permissions.';
+      document.getElementById('userSaveBtn').textContent = 'Save Changes';
+      document.getElementById('newUser').value = u.Username;
+      document.getElementById('newUser').disabled = true;
+      document.getElementById('newPass').value = '';
+      document.getElementById('passHint').textContent = '(leave blank to keep current)';
+      document.getElementById('newRole').value = u.Role;
+      document.querySelectorAll('#viewsCheckboxes input').forEach(cb => cb.checked = false);
+      const av = String(u.Allowed_Views || 'ALL').trim();
+      if (av === 'ALL' || av === '') {
+        document.getElementById('cb-ALL').checked = true;
+        users.toggleAll(document.getElementById('cb-ALL'));
+      } else {
+        av.split(',').map(s => s.trim()).forEach(v => {
+          const cb = document.querySelector(`#viewsCheckboxes input[value="${v}"]`);
+          if (cb) cb.checked = true;
+        });
+      }
+      users.updateHint();
+      ui.openModal('userModal');
+    },
+    toggleAll(cb) {
+      document.querySelectorAll('.view-cb').forEach(c => { c.disabled = cb.checked; if (cb.checked) c.checked = false; });
+    },
+    updateHint() {
+      const r = document.getElementById('newRole').value;
+      const h = {
+        'Super Admin': '— Full access, manages all users',
+        'Admin': '— Edit/delete data, no user management',
+        'Data Entry': '— Add rows only, no edit/delete',
+        'Viewer': '— Read-only access'
+      };
+      document.getElementById('accessHint').textContent = h[r] || '';
+    },
+    async save() {
+      const u = document.getElementById('newUser').value.trim();
+      const p = document.getElementById('newPass').value;
+      const r = document.getElementById('newRole').value;
+      let allowed;
+      if (document.getElementById('cb-ALL').checked) allowed = 'ALL';
+      else {
+        const checked = Array.from(document.querySelectorAll('.view-cb:checked')).map(cb => cb.value);
+        if (checked.length === 0) { ui.toast('Select at least one view', 'error'); return; }
+        allowed = checked.join(',');
+      }
+      if (!u) { ui.toast('Username required', 'error'); return; }
+      if (!state.userEditContext && !p) { ui.toast('Password required', 'error'); return; }
+      const row = { Username: u, Password: p, Role: r, Allowed_Views: allowed };
+      let res;
+      if (state.userEditContext) res = await api.call({ action: 'updateUser', rowIndex: state.userEditContext._rowIndex, row });
+      else { row.Created_Date = new Date().toISOString(); res = await api.call({ action: 'addUser', row }); }
+      if (res.success) { ui.toast(state.userEditContext ? 'User updated' : 'User added'); ui.closeModal('userModal'); await users.load(); }
+      else ui.toast('Failed: ' + res.error, 'error');
+    },
+    async del(rowIndex, username) {
+      if (username === state.user.username) { ui.toast('Cannot delete yourself', 'error'); return; }
+      if (!confirm('Delete user ' + username + '?')) return;
+      const res = await api.call({ action: 'deleteUser', rowIndex });
+      if (res.success) { ui.toast('User deleted'); await users.load(); }
+      else ui.toast('Failed: ' + res.error, 'error');
+    }
+  };
+
+  /* ==========================================================
+     LOGS
+     ========================================================== */
+  const logs = {
+    async load() {
+      const res = await api.call({ action: 'getActivityLog' });
+      if (!res.success) { ui.toast(res.error, 'error'); return; }
+      const rows = (res.rows || []).reverse();
+      document.getElementById('logsTable').innerHTML = `
+        <div class="table-card">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Sheet</th><th>Details</th></tr></thead>
+              <tbody>
+                ${rows.map(r => `
+                  <tr>
+                    <td style="font-size:12px;">${ui.formatCell(r.Timestamp)}</td>
+                    <td><strong style="color:var(--ivory);">${r.User}</strong></td>
+                    <td><span class="badge badge-info">${r.Action}</span></td>
+                    <td>${r.Sheet}</td>
+                    <td style="font-size:11px; max-width:340px; overflow:hidden; text-overflow:ellipsis; color:var(--muted);">${r.Details || '—'}</td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+  };
+
+  /* ==========================================================
+     BOOT
+     ========================================================== */
+  function boot() {
+    // Nav clicks
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        if (item.classList.contains('hidden')) return;
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+        const v = item.dataset.view;
+        document.querySelectorAll('.view').forEach(s => s.classList.remove('active'));
+        document.getElementById('view-' + v).classList.add('active');
+        if (v === 'logs') logs.load();
+      });
+    });
+    document.getElementById('loginPass').addEventListener('keypress', e => { if (e.key === 'Enter') auth.login(); });
+    bulk.init();
   }
 
-  if (!u) { toast('Username required', true); return; }
-  if (!userEditContext && !p) { toast('Password required for new user', true); return; }
+  return { config, state, api, ui, auth, dashboard, entry, bulk, tables, users, logs, boot };
+})();
 
-  const row = { Username: u, Password: p, Role: r, Allowed_Views: allowedViews };
-
-  let res;
-  if (userEditContext) {
-    res = await api({ action: 'updateUser', rowIndex: userEditContext._rowIndex, row: row });
-  } else {
-    row.Created_Date = new Date().toISOString();
-    res = await api({ action: 'addUser', row: row });
-  }
-
-  if (res.success) {
-    toast(userEditContext ? 'User updated' : 'User added');
-    closeModal('userModal');
-    await loadUsers();
-  } else {
-    toast('Failed: ' + res.error, true);
-  }
-}
-
-async function delUser(rowIndex, username) {
-  if (username === currentUser.username) { toast('Cannot delete yourself', true); return; }
-  if (!confirm('Delete user ' + username + '?')) return;
-  const res = await api({ action: 'deleteUser', rowIndex: rowIndex });
-  if (res.success) { toast('User deleted'); await loadUsers(); }
-  else toast('Failed: ' + res.error, true);
-}
-
-// ============================================================
-// ACTIVITY LOG
-// ============================================================
-async function loadActivityLog() {
-  const res = await api({ action: 'getActivityLog' });
-  if (!res.success) { toast(res.error, true); return; }
-  const container = document.getElementById('logsTable');
-  const rows = (res.rows || []).reverse(); // newest first
-  container.innerHTML = `
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Sheet</th><th>Details</th></tr></thead>
-        <tbody>
-          ${rows.map(r => `
-            <tr>
-              <td style="font-size:12px;">${formatCell(r.Timestamp)}</td>
-              <td><strong>${r.User}</strong></td>
-              <td><span class="badge badge-info">${r.Action}</span></td>
-              <td>${r.Sheet}</td>
-              <td style="font-size:12px; max-width:300px; overflow:hidden; text-overflow:ellipsis;">${r.Details || '-'}</td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>`;
-}
-
-// ============================================================
-// TOAST
-// ============================================================
-function toast(msg, isError) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (isError ? ' error' : '');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-document.getElementById('loginPass').addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
+App.boot();
 </script>
 </body>
 </html>
