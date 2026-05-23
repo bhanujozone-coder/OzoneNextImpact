@@ -661,8 +661,6 @@
           </div>
         </div>
 
-        <div id="execSummary"></div>
-
         <div id="filterBar" style="margin-bottom:24px;"></div>
 
         <div id="alertsPanel"></div>
@@ -685,6 +683,8 @@
             <div id="threadLowList" style="max-height:300px; overflow-y:auto;"></div>
           </div>
         </div>
+
+        <div id="execSummary" style="margin-top:32px;"></div>
       </section>
 
       <!-- ADD ENTRY -->
@@ -1379,7 +1379,6 @@ const App = (() => {
           <div class="insights-grid">
             ${insights.map(i => `
               <div class="insight-card ${i.cls}">
-                <div class="insight-icon">${i.icon}</div>
                 <div class="insight-title">${i.title}</div>
                 <div class="insight-value">${i.value}</div>
                 <div class="insight-detail">${i.detail}</div>
@@ -1463,7 +1462,6 @@ const App = (() => {
           <div class="insights-section">
             <div class="section-title">Action Required · Live alerts</div>
             <div class="alert-row info">
-              <div class="alert-icon-wrap">✓</div>
               <div class="alert-content">
                 <div class="alert-title">All clear</div>
                 <div class="alert-desc">No critical alerts. Stock levels are healthy.</div>
@@ -1478,7 +1476,6 @@ const App = (() => {
           <div class="section-title">Action Required · ${alerts.length} live alert${alerts.length === 1 ? '' : 's'}</div>
           ${alerts.map(a => `
             <div class="alert-row ${a.cls}">
-              <div class="alert-icon-wrap">${a.icon}</div>
               <div class="alert-content">
                 <div class="alert-title">${a.title}</div>
                 <div class="alert-desc">${a.desc}</div>
