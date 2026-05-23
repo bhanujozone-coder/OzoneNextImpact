@@ -685,7 +685,7 @@ const App = (() => {
       'Inventory':          ['S_No', 'Material', 'Code', 'Colour_Name', 'Vendor', 'Thread_Code', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Date_Added'],
       'Color_Development':  ['Code', 'Leather_Lining_Name', 'Coats_Code', 'Coats_Dev_Date', 'Coats_Status', 'Serafil_Code', 'Serafil_Dev_Date', 'Serafil_Status'],
       'Zippers':            ['S_No', 'Zipper_Code', 'Approval_Status', 'Balance_Material', 'Vendor', 'Date_Added'],
-      'Threads':            ['Sr_No', 'Category', 'Material_Type', 'Colour', 'Code_No', 'Vendor', 'Thread_Code', 'Size_20', 'Size_40', 'Size_60', 'Quality', 'GSM', 'Status', 'Remarks']
+      'Threads':            ['Sr_No', 'Category', 'Material_Type', 'Colour', 'Code_No', 'Vendor', 'Thread_Code', 'Size_20', 'Size_40', 'Size_60', 'Quality', 'Thread_Ref', 'Status', 'Remarks']
     },
     REQUIRED_FIELDS: {
       'Outer_Material':     ['Style_No', 'Style_Name', 'Item_Code'],
@@ -702,8 +702,7 @@ const App = (() => {
       'Coats_Status':    ['Approved', 'Not Approved', 'Given To Develop', 'Pending'],
       'Serafil_Status':  ['Approved', 'Not Approved', 'Given To Develop', 'Pending'],
       'Material_Type':   ['Outer', 'Lining'],
-      'Category':        ['NPT', 'OTT', 'T2T', 'LNT', 'Other'],
-      'Status':          ['IN STOCK', 'TO ORDER', 'TO DEVELOP', 'NOT REQUIRED AGAIN', 'PART OF ABOVE', 'ORDER PLACED', 'TO PLACE ORDER', 'Pending']
+      'Category':        ['NPT', 'OTT', 'T2T', 'LNT', 'Other']
     },
     VIEW_TO_SHEET: {
       'outer': 'Outer_Material', 'lining': 'Lining_Material', 'inventory': 'Inventory',
