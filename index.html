@@ -464,6 +464,7 @@
         <div class="nav-item" data-view="inventory" data-sheet="Inventory"><span class="nav-icon">◗</span> Inventory</div>
         <div class="nav-item" data-view="colorDev" data-sheet="Color_Development"><span class="nav-icon">◗</span> Color Development</div>
         <div class="nav-item" data-view="zippers" data-sheet="Zippers"><span class="nav-icon">◗</span> Zippers</div>
+        <div class="nav-item" data-view="threads" data-sheet="Threads"><span class="nav-icon">◗</span> Threads</div>
       </div>
 
       <div class="sidebar-section">
@@ -480,6 +481,9 @@
         <div class="dashlet-toggle"><input type="checkbox" id="dl-approval" checked><label for="dl-approval">Approval Status</label></div>
         <div class="dashlet-toggle"><input type="checkbox" id="dl-zipper" checked><label for="dl-zipper">Zipper Stock</label></div>
         <div class="dashlet-toggle"><input type="checkbox" id="dl-lowstock" checked><label for="dl-lowstock">Low Stock Alerts</label></div>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-threadvendor" checked><label for="dl-threadvendor">Thread Vendors</label></div>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-threadstatus" checked><label for="dl-threadstatus">Thread Status</label></div>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-threadlow" checked><label for="dl-threadlow">Thread Low Stock</label></div>
       </div>
     </aside>
 
@@ -501,6 +505,12 @@
           <div class="dashlet" id="dashlet-lowstock">
             <h3>Low Stock — Balance &lt; 50</h3>
             <div id="lowStockList" style="max-height:300px; overflow-y:auto;"></div>
+          </div>
+          <div class="dashlet" id="dashlet-threadvendor"><h3>Thread Vendors</h3><canvas id="chart-threadvendor"></canvas></div>
+          <div class="dashlet" id="dashlet-threadstatus"><h3>Thread Status</h3><canvas id="chart-threadstatus"></canvas></div>
+          <div class="dashlet" id="dashlet-threadlow">
+            <h3>Threads — Missing Sizes</h3>
+            <div id="threadLowList" style="max-height:300px; overflow-y:auto;"></div>
           </div>
         </div>
       </section>
@@ -560,6 +570,7 @@
       <section id="view-inventory" class="view"><div id="page-Inventory"></div></section>
       <section id="view-colorDev" class="view"><div id="page-Color_Development"></div></section>
       <section id="view-zippers" class="view"><div id="page-Zippers"></div></section>
+      <section id="view-threads" class="view"><div id="page-Threads"></div></section>
 
       <!-- USERS -->
       <section id="view-users" class="view">
@@ -620,6 +631,7 @@
         <label><input type="checkbox" value="Inventory" class="view-cb"> Inventory</label>
         <label><input type="checkbox" value="Color_Development" class="view-cb"> Color Development</label>
         <label><input type="checkbox" value="Zippers" class="view-cb"> Zippers</label>
+        <label><input type="checkbox" value="Threads" class="view-cb"> Threads</label>
       </div>
     </div>
     <div class="form-actions">
@@ -672,29 +684,34 @@ const App = (() => {
       'Lining_Material':    ['Style_No', 'Style_Name', 'Lining_Item', 'GSM', 'Color', 'Quantity', 'Date_Added'],
       'Inventory':          ['S_No', 'Material', 'Code', 'Colour_Name', 'Vendor', 'Thread_Code', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Date_Added'],
       'Color_Development':  ['Code', 'Leather_Lining_Name', 'Coats_Code', 'Coats_Dev_Date', 'Coats_Status', 'Serafil_Code', 'Serafil_Dev_Date', 'Serafil_Status'],
-      'Zippers':            ['S_No', 'Zipper_Code', 'Approval_Status', 'Balance_Material', 'Vendor', 'Date_Added']
+      'Zippers':            ['S_No', 'Zipper_Code', 'Approval_Status', 'Balance_Material', 'Vendor', 'Date_Added'],
+      'Threads':            ['Sr_No', 'Category', 'Material_Type', 'Colour', 'Code_No', 'Vendor', 'Thread_Code', 'Size_20', 'Size_40', 'Size_60', 'Quality', 'GSM', 'Status', 'Remarks']
     },
     REQUIRED_FIELDS: {
       'Outer_Material':     ['Style_No', 'Style_Name', 'Item_Code'],
       'Lining_Material':    ['Style_No', 'Lining_Item'],
       'Inventory':          ['Material', 'Code'],
       'Color_Development':  ['Code', 'Leather_Lining_Name'],
-      'Zippers':            ['Zipper_Code']
+      'Zippers':            ['Zipper_Code'],
+      'Threads':            ['Colour', 'Vendor']
     },
     DATE_FIELDS: ['Date_Added', 'Coats_Dev_Date', 'Serafil_Dev_Date'],
-    NUM_FIELDS: ['Quantity', 'GSM', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Balance_Material', 'S_No'],
+    NUM_FIELDS: ['Quantity', 'GSM', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Balance_Material', 'S_No', 'Sr_No', 'Size_20', 'Size_40', 'Size_60'],
     ENUM_FIELDS: {
       'Approval_Status': ['Approved', 'Not Approved', 'Pending'],
       'Coats_Status':    ['Approved', 'Not Approved', 'Given To Develop', 'Pending'],
-      'Serafil_Status':  ['Approved', 'Not Approved', 'Given To Develop', 'Pending']
+      'Serafil_Status':  ['Approved', 'Not Approved', 'Given To Develop', 'Pending'],
+      'Material_Type':   ['Outer', 'Lining'],
+      'Category':        ['NPT', 'OTT', 'T2T', 'LNT', 'Other'],
+      'Status':          ['IN STOCK', 'TO ORDER', 'TO DEVELOP', 'NOT REQUIRED AGAIN', 'PART OF ABOVE', 'ORDER PLACED', 'TO PLACE ORDER', 'Pending']
     },
     VIEW_TO_SHEET: {
       'outer': 'Outer_Material', 'lining': 'Lining_Material', 'inventory': 'Inventory',
-      'colorDev': 'Color_Development', 'zippers': 'Zippers'
+      'colorDev': 'Color_Development', 'zippers': 'Zippers', 'threads': 'Threads'
     },
     SHEET_TO_VIEW: {
       'Outer_Material': 'outer', 'Lining_Material': 'lining', 'Inventory': 'inventory',
-      'Color_Development': 'colorDev', 'Zippers': 'zippers'
+      'Color_Development': 'colorDev', 'Zippers': 'zippers', 'Threads': 'threads'
     }
   };
 
@@ -863,6 +880,11 @@ const App = (() => {
       if (auth.hasView('Inventory'))         kpis.push({ label: 'Inventory', value: (d['Inventory']?.rows || []).length, sub: 'records' });
       if (auth.hasView('Color_Development')) kpis.push({ label: 'Colors Approved', value: approved + ' / ' + colorDev.length, sub: 'in development pipeline' });
       if (auth.hasView('Zippers'))           kpis.push({ label: 'Zipper Stock', value: zStock.toLocaleString(), sub: 'units in balance' });
+      if (auth.hasView('Threads')) {
+        const threads = d['Threads']?.rows || [];
+        const inStock = threads.filter(r => String(r.Status || '').toUpperCase().includes('IN STOCK')).length;
+        kpis.push({ label: 'Threads', value: inStock + ' / ' + threads.length, sub: 'in stock' });
+      }
 
       grid.innerHTML = kpis.map(k => `
         <div class="kpi-card">
@@ -878,15 +900,21 @@ const App = (() => {
 
       dashboard._stock(); dashboard._color(); dashboard._vendor();
       dashboard._approval(); dashboard._zipper(); dashboard._lowstock();
+      dashboard._threadvendor(); dashboard._threadstatus(); dashboard._threadlow();
 
       if (!auth.hasView('Color_Development')) document.getElementById('dashlet-approval').classList.add('hidden');
       if (!auth.hasView('Zippers')) {
         document.getElementById('dashlet-zipper').classList.add('hidden');
         document.getElementById('dashlet-lowstock').classList.add('hidden');
       }
+      if (!auth.hasView('Threads')) {
+        document.getElementById('dashlet-threadvendor').classList.add('hidden');
+        document.getElementById('dashlet-threadstatus').classList.add('hidden');
+        document.getElementById('dashlet-threadlow').classList.add('hidden');
+      }
 
       // Hook up dashlet toggles
-      ['stock','color','vendor','approval','zipper','lowstock'].forEach(n => {
+      ['stock','color','vendor','approval','zipper','lowstock','threadvendor','threadstatus','threadlow'].forEach(n => {
         document.getElementById('dl-' + n).onchange = e => {
           document.getElementById('dashlet-' + n).classList.toggle('hidden', !e.target.checked);
         };
@@ -980,6 +1008,60 @@ const App = (() => {
           <span style="color:var(--ivory-dim); font-size:13px;">${r.Zipper_Code || '—'}</span>
           <span class="badge ${Number(r.Balance_Material) === 0 ? 'badge-danger' : 'badge-warning'}">${r.Balance_Material}</span>
         </div>`).join('');
+    },
+    _threadvendor() {
+      dashboard._destroy('threadvendor');
+      const v = {};
+      (state.data['Threads']?.rows || []).forEach(r => {
+        const x = String(r.Vendor || '').trim().toUpperCase();
+        if (x) v[x] = (v[x] || 0) + 1;
+      });
+      state.charts.threadvendor = new Chart(document.getElementById('chart-threadvendor'), {
+        type: 'doughnut',
+        data: { labels: Object.keys(v), datasets: [{ data: Object.values(v), backgroundColor: ['#6b9ec9','#8db8d9','#a6c8e3','#c4dbed','#5a8fbf','#7eb6a8','#e8b96b'], borderColor: '#ffffff', borderWidth: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 12 } } } }
+      });
+    },
+    _threadstatus() {
+      dashboard._destroy('threadstatus');
+      const st = {};
+      (state.data['Threads']?.rows || []).forEach(r => {
+        let s = String(r.Status || '').trim().toUpperCase();
+        if (!s) s = 'UNSPECIFIED';
+        else if (s.includes('IN STOCK')) s = 'IN STOCK';
+        else if (s.includes('TO ORDER') || s.includes('TO PLACE')) s = 'TO ORDER';
+        else if (s.includes('TO DEVELOP')) s = 'TO DEVELOP';
+        else if (s.includes('NOT REQUIRED')) s = 'NOT REQUIRED';
+        else if (s.includes('PART OF')) s = 'PART OF ABOVE';
+        else if (s.includes('ORDER PLACED')) s = 'ORDER PLACED';
+        st[s] = (st[s] || 0) + 1;
+      });
+      const colors = { 'IN STOCK': '#6bbf94', 'TO ORDER': '#e8b96b', 'TO DEVELOP': '#d96b6b', 'NOT REQUIRED': '#8ba3bf', 'ORDER PLACED': '#5a8fbf', 'PART OF ABOVE': '#a6c8e3', 'UNSPECIFIED': '#c4dbed' };
+      const labels = Object.keys(st);
+      state.charts.threadstatus = new Chart(document.getElementById('chart-threadstatus'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Count', data: labels.map(l => st[l]), backgroundColor: labels.map(l => colors[l] || '#8ba3bf'), borderRadius: 3 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: '#dde7f2' } } } }
+      });
+    },
+    _threadlow() {
+      const c = document.getElementById('threadLowList');
+      const lows = (state.data['Threads']?.rows || []).filter(r => {
+        const total = (Number(r.Size_20) || 0) + (Number(r.Size_40) || 0) + (Number(r.Size_60) || 0);
+        return total === 0 && !String(r.Status || '').toUpperCase().includes('NOT REQUIRED');
+      });
+      if (lows.length === 0) {
+        c.innerHTML = '<div class="empty-state"><h4>All threads stocked</h4><p>Every thread has sizes recorded.</p></div>';
+        return;
+      }
+      c.innerHTML = lows.slice(0, 12).map(r => `
+        <div style="padding:11px 0; border-bottom:1px solid var(--leather-line); display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <span style="color:var(--ivory-dim); font-size:13px;">
+            <strong style="color:var(--ivory);">${r.Colour || '—'}</strong>
+            <span style="color:var(--muted); font-size:11px;"> · ${r.Vendor || '?'}</span>
+          </span>
+          <span class="badge badge-warning">${(r.Status || 'No status').slice(0, 20)}</span>
+        </div>`).join('') + (lows.length > 12 ? `<div style="padding:10px; color:var(--muted); font-size:11px; text-align:center;">+${lows.length - 12} more</div>` : '');
     }
   };
 
