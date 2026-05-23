@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Ozone Next Impact — Atelier</title>
+<title>Ozone Next Impact — Inventory Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -37,6 +37,20 @@
     --danger:          #d96b6b;
     --success:         #6bbf94;
     --warning:         #e8b96b;
+
+    /* Rich chart palette — 12 distinguishable colors */
+    --c1:  #6b9ec9;   /* soft blue */
+    --c2:  #f4a76b;   /* warm orange */
+    --c3:  #6bbf94;   /* sage green */
+    --c4:  #b88dd9;   /* lavender */
+    --c5:  #e8b96b;   /* amber */
+    --c6:  #5dc0c8;   /* teal */
+    --c7:  #d96b94;   /* rose pink */
+    --c8:  #8db8d9;   /* sky blue */
+    --c9:  #c4a96b;   /* gold */
+    --c10: #7eb6a8;   /* mint */
+    --c11: #d99c7e;   /* coral */
+    --c12: #9c8dd9;   /* periwinkle */
 
     --font-display: 'Fraunces', Georgia, serif;
     --font-body: 'Inter Tight', -apple-system, sans-serif;
@@ -400,6 +414,145 @@
   .helper-link:hover { color: var(--cognac-light); }
 
   .table-scroll { overflow-x: auto; max-height: 600px; overflow-y: auto; }
+
+  /* INSIGHTS PANEL — auto-generated conclusions */
+  .insights-section { margin-bottom: 28px; }
+  .insights-section .section-title {
+    font-family: var(--font-display); font-size: 14px; font-weight: 500;
+    color: var(--brass); letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .insights-section .section-title::before {
+    content: ''; width: 24px; height: 1px; background: var(--brass);
+  }
+  .insights-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;
+  }
+  .insight-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f7fafd 100%);
+    padding: 18px 20px; border-radius: var(--radius-lg);
+    border: 1px solid var(--leather-line);
+    border-left: 4px solid var(--c1);
+    position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .insight-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .insight-card.alert { border-left-color: var(--danger); background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%); }
+  .insight-card.warn { border-left-color: var(--warning); background: linear-gradient(135deg, #fffaf0 0%, #ffffff 100%); }
+  .insight-card.good { border-left-color: var(--success); background: linear-gradient(135deg, #f0faf4 0%, #ffffff 100%); }
+  .insight-card.info { border-left-color: var(--c4); background: linear-gradient(135deg, #f9f5ff 0%, #ffffff 100%); }
+  .insight-icon { font-size: 22px; margin-bottom: 8px; }
+  .insight-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .insight-value { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--ivory); line-height: 1.2; }
+  .insight-detail { font-size: 12px; color: var(--ivory-dim); margin-top: 6px; line-height: 1.4; }
+
+  /* ALERTS PANEL */
+  .alert-row {
+    display: flex; align-items: center; gap: 14px; padding: 14px 18px;
+    background: var(--leather-card); border-radius: var(--radius);
+    border: 1px solid var(--leather-line); border-left: 3px solid var(--danger);
+    margin-bottom: 8px;
+  }
+  .alert-row.warn { border-left-color: var(--warning); }
+  .alert-row.info { border-left-color: var(--c1); }
+  .alert-icon-wrap {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(217,107,107,0.1); color: var(--danger);
+    display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+  }
+  .alert-row.warn .alert-icon-wrap { background: rgba(232,185,107,0.15); color: var(--warning); }
+  .alert-row.info .alert-icon-wrap { background: rgba(107,158,201,0.15); color: var(--c1); }
+  .alert-content { flex: 1; }
+  .alert-title { font-weight: 600; color: var(--ivory); font-size: 13px; margin-bottom: 2px; }
+  .alert-desc { font-size: 12px; color: var(--muted); }
+  .alert-count { font-family: var(--font-display); font-size: 26px; font-weight: 500; color: var(--danger); }
+  .alert-row.warn .alert-count { color: var(--warning); }
+  .alert-row.info .alert-count { color: var(--c1); }
+
+  /* EXECUTIVE SUMMARY — top of dashboard */
+  .exec-summary {
+    background: linear-gradient(135deg, var(--leather-card) 0%, #eff5fa 100%);
+    border: 1px solid var(--leather-line); border-radius: var(--radius-lg);
+    padding: 28px 32px; margin-bottom: 28px;
+    position: relative; overflow: hidden;
+  }
+  .exec-summary::before {
+    content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 5px;
+    background: linear-gradient(180deg, var(--cognac), var(--brass));
+  }
+  .exec-summary .label {
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--brass);
+    margin-bottom: 12px; font-weight: 600;
+  }
+  .exec-summary .headline {
+    font-family: var(--font-display); font-size: 26px; font-weight: 400;
+    color: var(--ivory); line-height: 1.4; letter-spacing: -0.01em;
+  }
+  .exec-summary .headline strong { color: var(--cognac); font-weight: 600; }
+  .exec-summary .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 24px; margin-top: 20px; padding-top: 20px;
+    border-top: 1px solid var(--leather-line);
+  }
+  .exec-stat .num { font-family: var(--font-display); font-size: 28px; font-weight: 500; color: var(--cognac); }
+  .exec-stat .lbl { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    padding: 12px 16px; background: var(--leather-card);
+    border: 1px solid var(--leather-line); border-radius: var(--radius-lg);
+  }
+  .filter-bar .filter-label { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--brass); font-weight: 600; }
+  .filter-bar select {
+    padding: 7px 12px; background: var(--leather-bg); border: 1px solid var(--leather-line);
+    border-radius: var(--radius); color: var(--ivory); font-family: var(--font-body); font-size: 13px;
+    cursor: pointer;
+  }
+  .filter-bar select:focus { outline: none; border-color: var(--cognac); }
+  .filter-bar button {
+    padding: 7px 14px; background: transparent; color: var(--muted);
+    border: 1px solid var(--leather-line); border-radius: var(--radius);
+    font-family: var(--font-body); font-size: 12px; cursor: pointer; transition: all 0.2s;
+  }
+  .filter-bar button:hover { color: var(--ivory); border-color: var(--cognac); }
+  .active-filter {
+    background: var(--cognac); color: white; padding: 4px 10px; border-radius: 12px;
+    font-size: 11px; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .active-filter span { cursor: pointer; opacity: 0.7; }
+  .active-filter span:hover { opacity: 1; }
+
+  /* GLOBAL SEARCH RESULTS */
+  .search-result-group { padding: 8px 0; border-bottom: 1px solid var(--leather-line); }
+  .search-result-group:last-child { border-bottom: none; }
+  .search-group-title {
+    padding: 6px 16px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--brass); font-weight: 600; background: #f4f8fc;
+  }
+  .search-result-item {
+    padding: 10px 16px; cursor: pointer; transition: background 0.15s;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    color: var(--ivory);
+  }
+  .search-result-item:hover { background: #eff5fa; }
+  .search-result-item .main { color: var(--ivory); font-size: 13px; font-weight: 500; }
+  .search-result-item .sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .search-result-item .badge { flex-shrink: 0; }
+  .search-empty { padding: 24px; text-align: center; color: var(--muted); font-size: 13px; }
+
+  /* PRINT STYLES — for PDF export */
+  @media print {
+    body { background: white !important; }
+    body::before { display: none !important; }
+    .topbar, .sidebar, #filterBar, .btn-primary, .btn-secondary, .btn-logout, .btn-ghost { display: none !important; }
+    .main { padding: 0 !important; }
+    .layout { display: block !important; }
+    .insight-card, .dashlet, .kpi-card, .alert-row, .exec-summary { break-inside: avoid; }
+    .dashlet-grid { grid-template-columns: 1fr 1fr !important; }
+    .insights-grid { grid-template-columns: 1fr 1fr 1fr 1fr !important; }
+    .page-title { color: #1a1410 !important; }
+  }
 </style>
 </head>
 <body>
@@ -409,9 +562,8 @@
   <div class="login-stage">
     <div class="login-brand">
       <div class="meta">Ozone Next Impact</div>
-      <h1>The <em>Atelier</em><br>Inventory</h1>
+      <h1>The <em>NexImpact</em><br>Inventory</h1>
       <div class="divider"></div>
-      <p>A private workspace for the craft of leather goods. Track every material, color, and component from development to delivery.</p>
     </div>
     <div class="login-box">
       <h2>Sign In</h2>
@@ -426,7 +578,7 @@
       </div>
       <button id="loginBtn" onclick="App.auth.login()">Enter</button>
       <div class="error-msg" id="loginError"></div>
-      <div class="login-footer">Ozone Atelier · v3.0</div>
+      <div class="login-footer">Ozone Next Impact · v4.0</div>
     </div>
   </div>
 </div>
@@ -436,7 +588,14 @@
   <div class="topbar">
     <div class="brand">
       <div class="brand-mark">O</div>
-      <div class="brand-text">Ozone <em>Atelier</em></div>
+      <div class="brand-text">Ozone <em>NexImpact</em></div>
+    </div>
+    <div style="flex:1; max-width:480px; margin: 0 24px; position: relative;">
+      <input type="text" id="globalSearch" placeholder="Search anything — colors, codes, vendors, materials..."
+        style="width:100%; padding:10px 16px 10px 40px; background:var(--leather-card); border:1px solid var(--leather-line); border-radius:24px; color:var(--ivory); font-family:var(--font-body); font-size:13px;"
+        oninput="App.search.run(this.value)" onfocus="App.search.run(this.value)">
+      <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:14px;">⌕</span>
+      <div id="searchResults" style="display:none; position:absolute; top:100%; left:0; right:0; background:white; border:1px solid var(--leather-line); border-radius:var(--radius-lg); margin-top:6px; max-height:420px; overflow-y:auto; box-shadow:var(--shadow-lg); z-index:30;"></div>
     </div>
     <div class="topbar-right">
       <div class="user-chip">
@@ -490,11 +649,24 @@
     <main class="main">
       <!-- DASHBOARD -->
       <section id="view-dashboard" class="view active">
-        <div class="page-header">
-          <div class="page-eyebrow">Overview</div>
-          <h1 class="page-title">Today at the <em>Atelier</em></h1>
-          <p class="page-subtitle">A summary of materials, colors, and stock in motion.</p>
+        <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap;">
+          <div>
+            <div class="page-eyebrow">Executive Overview · <span id="todayDate"></span></div>
+            <h1 class="page-title">Ozone <em>NexImpact</em></h1>
+            <p class="page-subtitle">Live snapshot of materials, colors, vendors, and stock across the catalogue.</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn-secondary" onclick="App.dashboard.printReport()" title="Print as PDF">⎙ Print / PDF</button>
+            <button class="btn-secondary" onclick="App.dashboard.loadAll()" title="Refresh data">↻ Refresh</button>
+          </div>
         </div>
+
+        <div id="execSummary"></div>
+
+        <div id="filterBar" style="margin-bottom:24px;"></div>
+
+        <div id="alertsPanel"></div>
+        <div id="insightsPanel"></div>
         <div class="kpi-grid" id="kpiGrid"></div>
         <div class="dashlet-grid" id="dashletGrid">
           <div class="dashlet" id="dashlet-stock"><h3>Stock by Category</h3><canvas id="chart-stock"></canvas></div>
@@ -856,6 +1028,9 @@ const App = (() => {
       const res = await api.call({ action: 'getAll' });
       if (!res.success) { ui.toast('Load failed: ' + res.error, 'error'); return; }
       state.data = res.data;
+      state.filters = state.filters || {};
+      dashboard.renderExecSummary();
+      dashboard.renderFilters();
       dashboard.renderKPIs();
       dashboard.renderCharts();
       Object.keys(config.SCHEMAS).forEach(s => tables.render(s));
@@ -900,6 +1075,8 @@ const App = (() => {
       dashboard._stock(); dashboard._color(); dashboard._vendor();
       dashboard._approval(); dashboard._zipper(); dashboard._lowstock();
       dashboard._threadvendor(); dashboard._threadstatus(); dashboard._threadlow();
+      dashboard.renderInsights();
+      dashboard.renderAlerts();
 
       if (!auth.hasView('Color_Development')) document.getElementById('dashlet-approval').classList.add('hidden');
       if (!auth.hasView('Zippers')) {
@@ -912,13 +1089,15 @@ const App = (() => {
         document.getElementById('dashlet-threadlow').classList.add('hidden');
       }
 
-      // Hook up dashlet toggles
       ['stock','color','vendor','approval','zipper','lowstock','threadvendor','threadstatus','threadlow'].forEach(n => {
         document.getElementById('dl-' + n).onchange = e => {
           document.getElementById('dashlet-' + n).classList.toggle('hidden', !e.target.checked);
         };
       });
     },
+
+    // Rich 12-color palette for clearly distinguishable chart segments
+    _palette: ['#6b9ec9','#f4a76b','#6bbf94','#b88dd9','#e8b96b','#5dc0c8','#d96b94','#8db8d9','#c4a96b','#7eb6a8','#d99c7e','#9c8dd9'],
     _destroy(k) { if (state.charts[k]) { state.charts[k].destroy(); delete state.charts[k]; } },
     _stock() {
       dashboard._destroy('stock');
@@ -930,8 +1109,8 @@ const App = (() => {
       if (auth.hasView('Zippers'))           counts['Zippers'] = (state.data['Zippers']?.rows || []).length;
       state.charts.stock = new Chart(document.getElementById('chart-stock'), {
         type: 'doughnut',
-        data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: ['#6b9ec9','#8db8d9','#a6c8e3','#c4dbed','#5a8fbf'], borderColor: '#ffffff', borderWidth: 2 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 12 }, padding: 14, usePointStyle: true } } } }
+        data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: dashboard._palette, borderColor: '#ffffff', borderWidth: 3, hoverOffset: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 12 }, padding: 14, usePointStyle: true } }, tooltip: { callbacks: { label: (c) => ` ${c.label}: ${c.parsed} items` } } } }
       });
     },
     _color() {
@@ -951,8 +1130,8 @@ const App = (() => {
       const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
       state.charts.color = new Chart(document.getElementById('chart-color'), {
         type: 'bar',
-        data: { labels: sorted.map(x => x[0]), datasets: [{ label: 'Frequency', data: sorted.map(x => x[1]), backgroundColor: '#6b9ec9', borderRadius: 3 }] },
-        options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#dde7f2' } }, y: { grid: { display: false } } } }
+        data: { labels: sorted.map(x => x[0]), datasets: [{ label: 'Frequency', data: sorted.map(x => x[1]), backgroundColor: sorted.map((_, i) => dashboard._palette[i % dashboard._palette.length]), borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${c.parsed.x} entries` } } }, scales: { x: { grid: { color: '#dde7f2' } }, y: { grid: { display: false } } } }
       });
     },
     _vendor() {
@@ -962,7 +1141,7 @@ const App = (() => {
       if (auth.hasView('Zippers')) (state.data['Zippers']?.rows || []).forEach(r => { const x = String(r.Vendor || 'Unknown').trim(); v[x] = (v[x] || 0) + 1; });
       state.charts.vendor = new Chart(document.getElementById('chart-vendor'), {
         type: 'pie',
-        data: { labels: Object.keys(v), datasets: [{ data: Object.values(v), backgroundColor: ['#6b9ec9','#a6c8e3','#5a8fbf','#8db8d9','#c4dbed','#7eb6a8','#e8a3a3'], borderColor: '#ffffff', borderWidth: 2 }] },
+        data: { labels: Object.keys(v), datasets: [{ data: Object.values(v), backgroundColor: dashboard._palette, borderColor: '#ffffff', borderWidth: 3, hoverOffset: 8 }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 12 } } } }
       });
     },
@@ -989,7 +1168,7 @@ const App = (() => {
         .filter(r => r.qty > 0).sort((a,b) => b.qty - a.qty).slice(0,10);
       state.charts.zipper = new Chart(document.getElementById('chart-zipper'), {
         type: 'bar',
-        data: { labels: top.map(t => t.code), datasets: [{ label: 'Stock', data: top.map(t => t.qty), backgroundColor: '#5a8fbf', borderRadius: 3 }] },
+        data: { labels: top.map(t => t.code), datasets: [{ label: 'Stock', data: top.map(t => t.qty), backgroundColor: top.map((_, i) => dashboard._palette[i % dashboard._palette.length]), borderRadius: 4 }] },
         options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#dde7f2' } }, y: { grid: { display: false } } } }
       });
     },
@@ -1017,7 +1196,7 @@ const App = (() => {
       });
       state.charts.threadvendor = new Chart(document.getElementById('chart-threadvendor'), {
         type: 'doughnut',
-        data: { labels: Object.keys(v), datasets: [{ data: Object.values(v), backgroundColor: ['#6b9ec9','#8db8d9','#a6c8e3','#c4dbed','#5a8fbf','#7eb6a8','#e8b96b'], borderColor: '#ffffff', borderWidth: 2 }] },
+        data: { labels: Object.keys(v), datasets: [{ data: Object.values(v), backgroundColor: dashboard._palette, borderColor: '#ffffff', borderWidth: 3, hoverOffset: 8 }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 12 } } } }
       });
     },
@@ -1061,6 +1240,472 @@ const App = (() => {
           </span>
           <span class="badge badge-warning">${(r.Status || 'No status').slice(0, 20)}</span>
         </div>`).join('') + (lows.length > 12 ? `<div style="padding:10px; color:var(--muted); font-size:11px; text-align:center;">+${lows.length - 12} more</div>` : '');
+    },
+
+    // ============ SMART INSIGHTS ============
+    renderInsights() {
+      const container = document.getElementById('insightsPanel');
+      const d = state.data;
+      const insights = [];
+
+      // 1. Total inventory items across all categories
+      const totalItems = Object.keys(d).reduce((s, k) => s + (d[k]?.rows?.length || 0), 0);
+
+      // 2. Most demanded color across all categories
+      const allColors = {};
+      ['Outer_Material','Lining_Material','Inventory','Threads'].forEach(s => {
+        if (!auth.hasView(s)) return;
+        (d[s]?.rows || []).forEach(r => {
+          const c = String(r.Color || r.Colour || r.Colour_Name || '').trim();
+          if (c) allColors[c] = (allColors[c] || 0) + 1;
+        });
+      });
+      const topColor = Object.entries(allColors).sort((a,b) => b[1] - a[1])[0];
+
+      // 3. Top vendor by mentions
+      const allVendors = {};
+      ['Inventory','Zippers','Threads'].forEach(s => {
+        if (!auth.hasView(s)) return;
+        (d[s]?.rows || []).forEach(r => {
+          const v = String(r.Vendor || '').trim().toUpperCase();
+          if (v && v !== 'UNKNOWN') allVendors[v] = (allVendors[v] || 0) + 1;
+        });
+      });
+      const topVendor = Object.entries(allVendors).sort((a,b) => b[1] - a[1])[0];
+
+      // 4. Pending approvals in color development
+      const pendingApprovals = (d['Color_Development']?.rows || []).filter(r => {
+        const s = String(r.Coats_Status || '').toLowerCase();
+        return s.includes('develop') || s.includes('pending') || (!s.includes('approved') && s);
+      }).length;
+
+      // 5. Threads needing action
+      const threadsToOrder = (d['Threads']?.rows || []).filter(r => {
+        const s = String(r.Status || '').toUpperCase();
+        return s.includes('TO ORDER') || s.includes('TO DEVELOP') || s.includes('TO PLACE');
+      }).length;
+
+      // 6. Zipper stock health
+      const zippers = d['Zippers']?.rows || [];
+      const lowZippers = zippers.filter(r => { const n = Number(r.Balance_Material); return !isNaN(n) && n < 50; }).length;
+      const zHealth = zippers.length > 0 ? Math.round((1 - lowZippers / zippers.length) * 100) : 100;
+
+      // 7. Most common material code
+      const matCodes = {};
+      (d['Outer_Material']?.rows || []).forEach(r => {
+        const code = String(r.Item_Code || '').split('/')[0].split(' (')[0].trim();
+        if (code) matCodes[code] = (matCodes[code] || 0) + 1;
+      });
+      const topMaterial = Object.entries(matCodes).sort((a,b) => b[1] - a[1])[0];
+
+      // 8. Vendor diversity
+      const vendorCount = Object.keys(allVendors).length;
+
+      // Build the cards
+      if (totalItems > 0) insights.push({
+        icon: '📦', cls: 'info', title: 'Total Items Tracked',
+        value: totalItems.toLocaleString(), detail: `across ${Object.keys(d).filter(k => (d[k]?.rows?.length || 0) > 0).length} categories`
+      });
+
+      if (topColor) insights.push({
+        icon: '🎨', cls: 'good', title: 'Most Demanded Color',
+        value: topColor[0], detail: `${topColor[1]} entries across catalogue`
+      });
+
+      if (topVendor) insights.push({
+        icon: '🏭', cls: 'info', title: 'Top Vendor',
+        value: topVendor[0], detail: `${topVendor[1]} items supplied · ${vendorCount} vendors total`
+      });
+
+      if (topMaterial) insights.push({
+        icon: '🧵', cls: 'info', title: 'Most Used Material',
+        value: topMaterial[0], detail: `${topMaterial[1]} color variants in stock`
+      });
+
+      if (pendingApprovals > 0) insights.push({
+        icon: '⏳', cls: 'warn', title: 'Awaiting Approval',
+        value: pendingApprovals, detail: 'color development items pending decision'
+      });
+
+      if (threadsToOrder > 0) insights.push({
+        icon: '📋', cls: 'alert', title: 'Threads to Order',
+        value: threadsToOrder, detail: 'need procurement action'
+      });
+
+      if (zippers.length > 0) insights.push({
+        icon: zHealth >= 80 ? '✓' : zHealth >= 50 ? '⚠' : '⚡', cls: zHealth >= 80 ? 'good' : zHealth >= 50 ? 'warn' : 'alert',
+        title: 'Zipper Stock Health', value: zHealth + '%',
+        detail: `${zippers.length - lowZippers} of ${zippers.length} above threshold`
+      });
+
+      if (Object.keys(allColors).length > 0) insights.push({
+        icon: '🌈', cls: 'info', title: 'Color Variety',
+        value: Object.keys(allColors).length, detail: 'unique colors in active inventory'
+      });
+
+      // CEO-focused: vendor concentration risk
+      if (topVendor && Object.keys(allVendors).length > 0) {
+        const totalVendorMentions = Object.values(allVendors).reduce((s, v) => s + v, 0);
+        const topShare = Math.round((topVendor[1] / totalVendorMentions) * 100);
+        insights.push({
+          icon: topShare > 50 ? '⚠' : '✓',
+          cls: topShare > 50 ? 'warn' : 'good',
+          title: 'Vendor Concentration',
+          value: topShare + '%',
+          detail: `${topVendor[0]} supplies ${topShare}% of items${topShare > 50 ? ' — consider diversifying' : ' (healthy mix)'}`
+        });
+      }
+
+      // CEO-focused: development pipeline strength
+      const colorDev = d['Color_Development']?.rows || [];
+      if (colorDev.length > 0) {
+        const approved = colorDev.filter(r => {
+          const s = String(r.Coats_Status || '').toLowerCase();
+          return s.includes('approved') && !s.includes('not');
+        }).length;
+        const approvalRate = Math.round((approved / colorDev.length) * 100);
+        insights.push({
+          icon: approvalRate >= 60 ? '✓' : '🔬',
+          cls: approvalRate >= 60 ? 'good' : 'info',
+          title: 'Color Approval Rate',
+          value: approvalRate + '%',
+          detail: `${approved} of ${colorDev.length} colors approved`
+        });
+      }
+
+      container.innerHTML = `
+        <div class="insights-section">
+          <div class="section-title">Smart Insights · Auto-generated conclusions</div>
+          <div class="insights-grid">
+            ${insights.map(i => `
+              <div class="insight-card ${i.cls}">
+                <div class="insight-icon">${i.icon}</div>
+                <div class="insight-title">${i.title}</div>
+                <div class="insight-value">${i.value}</div>
+                <div class="insight-detail">${i.detail}</div>
+              </div>`).join('')}
+          </div>
+        </div>`;
+    },
+
+    renderAlerts() {
+      const container = document.getElementById('alertsPanel');
+      const d = state.data;
+      const alerts = [];
+
+      // Zippers with 0 stock
+      const zerosZip = (d['Zippers']?.rows || []).filter(r => Number(r.Balance_Material) === 0).length;
+      if (zerosZip > 0) alerts.push({
+        cls: '', icon: '⚡', title: 'Out of Stock — Zippers',
+        desc: `${zerosZip} zipper code${zerosZip === 1 ? '' : 's'} have zero balance — order immediately`,
+        count: zerosZip
+      });
+
+      // Zippers low stock
+      const lowZip = (d['Zippers']?.rows || []).filter(r => { const n = Number(r.Balance_Material); return n > 0 && n < 50; }).length;
+      if (lowZip > 0) alerts.push({
+        cls: 'warn', icon: '⚠', title: 'Low Stock — Zippers',
+        desc: `${lowZip} zipper code${lowZip === 1 ? '' : 's'} below 50 units`,
+        count: lowZip
+      });
+
+      // Threads to order
+      const tOrder = (d['Threads']?.rows || []).filter(r => {
+        const s = String(r.Status || '').toUpperCase();
+        return s.includes('TO ORDER') || s.includes('TO PLACE');
+      }).length;
+      if (tOrder > 0) alerts.push({
+        cls: 'warn', icon: '📋', title: 'Threads Pending Order',
+        desc: `${tOrder} thread color${tOrder === 1 ? '' : 's'} marked TO ORDER — initiate procurement`,
+        count: tOrder
+      });
+
+      // Threads to develop
+      const tDev = (d['Threads']?.rows || []).filter(r => String(r.Status || '').toUpperCase().includes('TO DEVELOP')).length;
+      if (tDev > 0) alerts.push({
+        cls: 'info', icon: '🔬', title: 'Threads in Development',
+        desc: `${tDev} thread color${tDev === 1 ? '' : 's'} require development with vendor`,
+        count: tDev
+      });
+
+      // Pending colors in color development
+      const cDev = (d['Color_Development']?.rows || []).filter(r => {
+        const s = String(r.Coats_Status || '').toLowerCase();
+        return s.includes('develop') || s.includes('pending');
+      }).length;
+      if (cDev > 0) alerts.push({
+        cls: 'info', icon: '🎨', title: 'Colors in Development',
+        desc: `${cDev} color${cDev === 1 ? '' : 's'} awaiting Coats/Serafil development`,
+        count: cDev
+      });
+
+      // Outer material with zero quantity (pending receipts)
+      const omPending = (d['Outer_Material']?.rows || []).filter(r => Number(r.Quantity) === 0).length;
+      if (omPending > 0) alerts.push({
+        cls: 'warn', icon: '📥', title: 'Outer Material Pending Receipt',
+        desc: `${omPending} material${omPending === 1 ? '' : 's'} ordered but not yet received`,
+        count: omPending
+      });
+
+      // Threads missing all sizes
+      const tMissing = (d['Threads']?.rows || []).filter(r => {
+        const total = (Number(r.Size_20) || 0) + (Number(r.Size_40) || 0) + (Number(r.Size_60) || 0);
+        return total === 0 && !String(r.Status || '').toUpperCase().includes('NOT REQUIRED');
+      }).length;
+      if (tMissing > 0) alerts.push({
+        cls: 'warn', icon: '🪡', title: 'Threads Without Stock Data',
+        desc: `${tMissing} thread record${tMissing === 1 ? '' : 's'} have no size/quantity recorded`,
+        count: tMissing
+      });
+
+      if (alerts.length === 0) {
+        container.innerHTML = `
+          <div class="insights-section">
+            <div class="section-title">Action Required · Live alerts</div>
+            <div class="alert-row info">
+              <div class="alert-icon-wrap">✓</div>
+              <div class="alert-content">
+                <div class="alert-title">All clear</div>
+                <div class="alert-desc">No critical alerts. Stock levels are healthy.</div>
+              </div>
+            </div>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="insights-section">
+          <div class="section-title">Action Required · ${alerts.length} live alert${alerts.length === 1 ? '' : 's'}</div>
+          ${alerts.map(a => `
+            <div class="alert-row ${a.cls}">
+              <div class="alert-icon-wrap">${a.icon}</div>
+              <div class="alert-content">
+                <div class="alert-title">${a.title}</div>
+                <div class="alert-desc">${a.desc}</div>
+              </div>
+              <div class="alert-count">${a.count}</div>
+            </div>`).join('')}
+        </div>`;
+    },
+
+    // ============ EXECUTIVE SUMMARY — CEO-style narrative ============
+    renderExecSummary() {
+      const c = document.getElementById('execSummary');
+      if (!c) return;
+      const d = state.data;
+
+      // Total items
+      const totalItems = ['Outer_Material','Lining_Material','Inventory','Color_Development','Zippers','Threads']
+        .reduce((s, k) => s + (d[k]?.rows?.length || 0), 0);
+
+      // Vendor count
+      const vendors = new Set();
+      ['Inventory','Zippers','Threads'].forEach(s => {
+        (d[s]?.rows || []).forEach(r => {
+          const v = String(r.Vendor || '').trim().toUpperCase();
+          if (v && v !== 'UNKNOWN') vendors.add(v);
+        });
+      });
+
+      // Total quantity of outer material in meters
+      const omMeters = (d['Outer_Material']?.rows || []).reduce((s, r) => s + (Number(r.Quantity) || 0), 0);
+
+      // Zipper stock
+      const zStock = (d['Zippers']?.rows || []).reduce((s, r) => s + (Number(r.Balance_Material) || 0), 0);
+
+      // Unique colors
+      const allColors = new Set();
+      ['Outer_Material','Lining_Material','Inventory','Threads'].forEach(s => {
+        (d[s]?.rows || []).forEach(r => {
+          const c = String(r.Color || r.Colour || r.Colour_Name || '').trim();
+          if (c) allColors.add(c.toLowerCase());
+        });
+      });
+
+      // Actions needed
+      const actionItems =
+        (d['Zippers']?.rows || []).filter(r => Number(r.Balance_Material) < 50).length +
+        (d['Threads']?.rows || []).filter(r => {
+          const s = String(r.Status || '').toUpperCase();
+          return s.includes('TO ORDER') || s.includes('TO PLACE') || s.includes('TO DEVELOP');
+        }).length;
+
+      // Build the narrative
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      document.getElementById('todayDate').textContent = today;
+
+      const narrative = `
+        The catalogue currently tracks <strong>${totalItems.toLocaleString()} items</strong>
+        across <strong>${vendors.size} vendor partners</strong>,
+        spanning <strong>${allColors.size} unique colors</strong>${actionItems > 0 ? `. <strong>${actionItems} items</strong> need procurement action.` : '. All stock levels are healthy.'}
+      `;
+
+      c.innerHTML = `
+        <div class="exec-summary">
+          <div class="label">Executive Summary · ${today}</div>
+          <div class="headline">${narrative}</div>
+          <div class="stats">
+            <div class="exec-stat"><div class="num">${totalItems.toLocaleString()}</div><div class="lbl">Total Records</div></div>
+            <div class="exec-stat"><div class="num">${vendors.size}</div><div class="lbl">Vendor Partners</div></div>
+            <div class="exec-stat"><div class="num">${allColors.size}</div><div class="lbl">Unique Colors</div></div>
+            <div class="exec-stat"><div class="num">${omMeters.toFixed(0)}m</div><div class="lbl">Outer Material Stock</div></div>
+            <div class="exec-stat"><div class="num">${zStock.toLocaleString()}</div><div class="lbl">Zipper Units</div></div>
+            <div class="exec-stat"><div class="num" style="color:${actionItems > 0 ? 'var(--danger)' : 'var(--success)'};">${actionItems}</div><div class="lbl">Action Items</div></div>
+          </div>
+        </div>`;
+    },
+
+    // ============ QUICK FILTERS ============
+    renderFilters() {
+      const c = document.getElementById('filterBar');
+      if (!c) return;
+      const d = state.data;
+
+      // Collect unique vendors and categories from current data
+      const vendors = new Set();
+      ['Inventory','Zippers','Threads'].forEach(s => {
+        (d[s]?.rows || []).forEach(r => {
+          const v = String(r.Vendor || '').trim();
+          if (v && v.toUpperCase() !== 'UNKNOWN') vendors.add(v);
+        });
+      });
+
+      const categories = ['Outer_Material','Lining_Material','Inventory','Color_Development','Zippers','Threads']
+        .filter(s => auth.hasView(s));
+
+      const activeVendor = state.filters?.vendor || '';
+      const activeCategory = state.filters?.category || '';
+
+      c.innerHTML = `
+        <div class="filter-bar">
+          <span class="filter-label">Filter:</span>
+          <select onchange="App.dashboard.setFilter('category', this.value)">
+            <option value="">All Categories</option>
+            ${categories.map(c => `<option value="${c}" ${c === activeCategory ? 'selected' : ''}>${c.replace(/_/g,' ')}</option>`).join('')}
+          </select>
+          <select onchange="App.dashboard.setFilter('vendor', this.value)">
+            <option value="">All Vendors</option>
+            ${[...vendors].sort().map(v => `<option value="${v}" ${v === activeVendor ? 'selected' : ''}>${v}</option>`).join('')}
+          </select>
+          ${(activeVendor || activeCategory) ? `<button onclick="App.dashboard.clearFilters()">✕ Clear filters</button>` : ''}
+          ${activeCategory ? `<span class="active-filter">Category: ${activeCategory.replace(/_/g,' ')} <span onclick="App.dashboard.setFilter('category', '')">✕</span></span>` : ''}
+          ${activeVendor ? `<span class="active-filter">Vendor: ${activeVendor} <span onclick="App.dashboard.setFilter('vendor', '')">✕</span></span>` : ''}
+        </div>`;
+    },
+    setFilter(key, value) {
+      state.filters = state.filters || {};
+      state.filters[key] = value;
+      // Re-render everything with filter applied
+      const filtered = dashboard._applyFilters(state.data);
+      const realData = state.data;
+      state.data = filtered;
+      dashboard.renderExecSummary();
+      dashboard.renderInsights();
+      dashboard.renderAlerts();
+      dashboard.renderKPIs();
+      dashboard.renderCharts();
+      state.data = realData;
+      dashboard.renderFilters();
+    },
+    clearFilters() {
+      state.filters = {};
+      dashboard.renderExecSummary();
+      dashboard.renderInsights();
+      dashboard.renderAlerts();
+      dashboard.renderKPIs();
+      dashboard.renderCharts();
+      dashboard.renderFilters();
+    },
+    _applyFilters(data) {
+      const f = state.filters || {};
+      if (!f.vendor && !f.category) return data;
+      const result = {};
+      Object.keys(data).forEach(sheet => {
+        if (f.category && sheet !== f.category) {
+          result[sheet] = { ...data[sheet], rows: [] };
+        } else {
+          const rows = (data[sheet]?.rows || []).filter(r => {
+            if (f.vendor) {
+              const v = String(r.Vendor || '').trim();
+              if (v !== f.vendor) return false;
+            }
+            return true;
+          });
+          result[sheet] = { ...data[sheet], rows };
+        }
+      });
+      return result;
+    },
+
+    // ============ PRINT / PDF EXPORT ============
+    printReport() {
+      ui.toast('Opening print dialog…');
+      setTimeout(() => window.print(), 300);
+    }
+  };
+
+  /* ==========================================================
+     GLOBAL SEARCH — find anything across all sheets
+     ========================================================== */
+  const search = {
+    run(query) {
+      const results = document.getElementById('searchResults');
+      const q = String(query || '').trim().toLowerCase();
+      if (!q || q.length < 2) {
+        results.style.display = 'none';
+        return;
+      }
+      results.style.display = 'block';
+
+      const groups = {};
+      Object.keys(state.data).forEach(sheet => {
+        const rows = state.data[sheet]?.rows || [];
+        const matches = rows.filter(r => {
+          return Object.values(r).some(v => String(v ?? '').toLowerCase().includes(q));
+        }).slice(0, 5); // max 5 per category
+        if (matches.length > 0) groups[sheet] = matches;
+      });
+
+      const total = Object.values(groups).reduce((s, m) => s + m.length, 0);
+      if (total === 0) {
+        results.innerHTML = `<div class="search-empty">No results for "<strong>${query}</strong>"</div>`;
+        return;
+      }
+
+      results.innerHTML = Object.keys(groups).map(sheet => {
+        const headers = App.config.SCHEMAS[sheet] || [];
+        return `
+          <div class="search-result-group">
+            <div class="search-group-title">${sheet.replace(/_/g, ' ')} · ${groups[sheet].length} result${groups[sheet].length === 1 ? '' : 's'}</div>
+            ${groups[sheet].map(r => {
+              const main = r[headers[1]] || r[headers[0]] || r[headers[2]] || '—';
+              const sub = headers.slice(2, 5).map(h => r[h]).filter(Boolean).join(' · ');
+              const viewName = App.config.SHEET_TO_VIEW[sheet];
+              return `
+                <div class="search-result-item" onclick="App.search.goTo('${viewName}')">
+                  <div>
+                    <div class="main">${main}</div>
+                    <div class="sub">${sub}</div>
+                  </div>
+                  <span class="badge badge-info">Row ${r._rowIndex}</span>
+                </div>`;
+            }).join('')}
+          </div>`;
+      }).join('');
+    },
+    goTo(viewName) {
+      document.getElementById('globalSearch').value = '';
+      document.getElementById('searchResults').style.display = 'none';
+      const nav = document.querySelector(`.nav-item[data-view="${viewName}"]`);
+      if (nav) nav.click();
+    },
+    init() {
+      // Hide search results when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#globalSearch') && !e.target.closest('#searchResults')) {
+          document.getElementById('searchResults').style.display = 'none';
+        }
+      });
     }
   };
 
@@ -1566,10 +2211,27 @@ const App = (() => {
       });
     });
     document.getElementById('loginPass').addEventListener('keypress', e => { if (e.key === 'Enter') auth.login(); });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+      // Ctrl/Cmd + K = focus global search
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        const s = document.getElementById('globalSearch');
+        if (s) { e.preventDefault(); s.focus(); s.select(); }
+      }
+      // Esc = close any open modal or search dropdown
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-bg.active').forEach(m => m.classList.remove('active'));
+        const sr = document.getElementById('searchResults');
+        if (sr) sr.style.display = 'none';
+      }
+    });
+
     bulk.init();
+    search.init();
   }
 
-  return { config, state, api, ui, auth, dashboard, entry, bulk, tables, users, logs, boot };
+  return { config, state, api, ui, auth, dashboard, entry, bulk, tables, users, logs, search, boot };
 })();
 
 App.boot();
