@@ -21,23 +21,23 @@
     --leather-card:    #ffffff;   /* cards, modals */
     --leather-card-2:  #f4f8fc;   /* table headers, secondary surfaces */
     --leather-line:    #dde7f2;   /* borders, dividers */
-
+ 
     /* Blues — primary accent system */
     --cognac:          #6b9ec9;   /* primary action — soft pastel blue */
     --cognac-light:    #8db8d9;   /* hover state */
     --brass:           #5a8fbf;   /* secondary accent — slightly deeper blue */
     --gold:            #a6c8e3;   /* highlight tone */
-
+ 
     /* Text — calm slate tones */
     --ivory:           #1e3a5f;   /* primary text — deep slate blue */
     --ivory-dim:       #4a6585;   /* secondary text */
     --muted:           #8ba3bf;   /* tertiary, placeholders */
-
+ 
     /* Status colors */
     --danger:          #d96b6b;
     --success:         #6bbf94;
     --warning:         #e8b96b;
-
+ 
     /* Rich chart palette — soft pastel 6-color scheme (lighter, calmer) */
     --c1:  #b8d4e8;   /* soft sky blue */
     --c2:  #d9c7b8;   /* soft beige */
@@ -51,10 +51,10 @@
     --c10: #d9c8d9;
     --c11: #e8d4b8;
     --c12: #c8d4d9;
-
+ 
     --font-display: 'Fraunces', Georgia, serif;
     --font-body: 'Inter Tight', -apple-system, sans-serif;
-
+ 
     --radius: 6px;
     --radius-lg: 12px;
     --shadow-sm: 0 1px 2px rgba(107,158,201,0.08);
@@ -64,7 +64,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: var(--leather-deep); color: var(--ivory); font-family: var(--font-body); font-feature-settings: "ss01" 1, "cv11" 1; -webkit-font-smoothing: antialiased; }
   body { min-height: 100vh; position: relative; }
-
+ 
   /* Subtle paper grain texture overlay (very faint on light bg) */
   body::before {
     content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1;
@@ -72,9 +72,9 @@
     opacity: 0.4; mix-blend-mode: multiply;
   }
   body > * { position: relative; z-index: 2; }
-
+ 
   .font-display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; }
-
+ 
   /* ============================================================
      LOGIN SCREEN
      ============================================================ */
@@ -96,7 +96,7 @@
   .login-brand .divider { width: 64px; height: 1px; background: var(--brass); margin: 32px 0; }
   .login-brand p { font-size: 15px; color: var(--ivory-dim); line-height: 1.7; max-width: 380px; }
   .login-brand .meta { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--brass); margin-bottom: 8px; }
-
+ 
   .login-box {
     background: var(--leather-card); padding: 48px;
     border-radius: var(--radius-lg);
@@ -130,12 +130,12 @@
   .login-box button:disabled { opacity: 0.5; cursor: not-allowed; }
   .error-msg { color: var(--danger); font-size: 13px; margin-top: 16px; text-align: center; }
   .login-footer { font-size: 11px; color: var(--muted); margin-top: 32px; text-align: center; letter-spacing: 0.1em; }
-
+ 
   @media (max-width: 900px) {
     .login-stage { grid-template-columns: 1fr; gap: 40px; }
     .login-brand h1 { font-size: 56px; }
   }
-
+ 
   /* ============================================================
      APP SHELL
      ============================================================ */
@@ -161,9 +161,9 @@
   .role-pill { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--brass); padding-left: 12px; border-left: 1px solid var(--leather-line); }
   .btn-logout { background: transparent; color: var(--ivory-dim); border: 1px solid var(--leather-line); padding: 8px 16px; border-radius: var(--radius); font-family: var(--font-body); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
   .btn-logout:hover { border-color: var(--cognac); color: var(--cognac-light); }
-
+ 
   .layout { display: flex; min-height: calc(100vh - 73px); }
-
+ 
   /* SIDEBAR */
   .sidebar {
     width: 260px; background: var(--leather-bg);
@@ -205,7 +205,7 @@
     color: #ffffff; font-size: 11px; font-weight: 700;
   }
   .dashlet-toggle label { cursor: pointer; user-select: none; flex: 1; }
-
+ 
   /* MAIN */
   .main {
     flex: 1; padding: 40px 48px; overflow-y: auto;
@@ -214,13 +214,13 @@
   .view { display: none; animation: fadeIn 0.4s ease; }
   .view.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
+ 
   .page-header { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--leather-line); }
   .page-eyebrow { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--brass); margin-bottom: 8px; }
   .page-title { font-family: var(--font-display); font-weight: 400; font-size: 42px; letter-spacing: -0.02em; }
   .page-title em { font-style: italic; color: var(--cognac-light); }
   .page-subtitle { font-size: 14px; color: var(--ivory-dim); margin-top: 8px; max-width: 600px; line-height: 1.5; }
-
+ 
   /* KPI CARDS */
   .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
   .kpi-card {
@@ -234,7 +234,7 @@
   .kpi-card .label { color: var(--brass); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; }
   .kpi-card .value { font-family: var(--font-display); font-size: 36px; font-weight: 400; color: var(--ivory); letter-spacing: -0.02em; }
   .kpi-card .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
-
+ 
   /* DASHLETS */
   .dashlet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; }
   .dashlet {
@@ -245,7 +245,7 @@
   .dashlet h3::before { content: ''; width: 4px; height: 4px; background: var(--cognac); border-radius: 50%; }
   .dashlet canvas { max-height: 300px; }
   .dashlet.hidden { display: none; }
-
+ 
   /* TABLES */
   .table-card {
     background: var(--leather-card); border-radius: var(--radius-lg);
@@ -275,7 +275,7 @@
   .btn-edit:hover { background: rgba(212,165,116,0.25); }
   .btn-del { background: rgba(196,87,75,0.15); color: var(--danger); }
   .btn-del:hover { background: rgba(196,87,75,0.25); }
-
+ 
   /* BUTTONS */
   .btn-primary {
     background: var(--cognac); color: #ffffff; border: none;
@@ -296,7 +296,7 @@
   .btn-secondary:hover { border-color: var(--cognac); color: var(--cognac-light); }
   .btn-ghost { background: transparent; color: var(--brass); border: 1px solid transparent; padding: 10px 16px; border-radius: var(--radius); font-family: var(--font-body); font-size: 12px; cursor: pointer; transition: all 0.2s; }
   .btn-ghost:hover { background: rgba(176,132,84,0.1); }
-
+ 
   /* FORM */
   .form-card {
     background: var(--leather-card); padding: 32px; border-radius: var(--radius-lg);
@@ -316,7 +316,7 @@
   .form-field.full { grid-column: 1 / -1; }
   .form-actions { margin-top: 28px; display: flex; gap: 12px; }
   .form-error { font-size: 12px; color: var(--danger); margin-top: 6px; }
-
+ 
   /* MODAL */
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(30,58,95,0.45); backdrop-filter: blur(8px); z-index: 100; align-items: center; justify-content: center; padding: 24px; }
   .modal-bg.active { display: flex; }
@@ -328,12 +328,12 @@
   .modal h2 { font-family: var(--font-display); font-size: 26px; font-weight: 500; margin-bottom: 4px; }
   .modal .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
   .modal-wide { max-width: 880px; }
-
+ 
   /* CHECKBOX GROUP */
   .checkbox-group { display: flex; flex-direction: column; gap: 10px; padding: 16px; background: var(--leather-bg); border: 1px solid var(--leather-line); border-radius: var(--radius); }
   .checkbox-group label { display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; color: var(--ivory-dim); }
   .checkbox-group input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--cognac); cursor: pointer; }
-
+ 
   /* BADGES */
   .badge { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; display: inline-block; }
   .badge-success { background: #e3f5ec; color: #2d8f5f; }
@@ -341,7 +341,7 @@
   .badge-danger  { background: #fce8e8; color: #b03a3a; }
   .badge-info    { background: #e6f0f9; color: #3d6a96; }
   .badge-neutral { background: #eef2f7; color: #5a7090; }
-
+ 
   /* TOAST */
   .toast {
     position: fixed; bottom: 24px; right: 24px; padding: 14px 22px;
@@ -354,11 +354,11 @@
   .toast.error { border-color: var(--danger); }
   .toast.success { border-color: var(--success); }
   @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
+ 
   /* BANNERS */
   .info-banner { background: rgba(176,132,84,0.1); border-left: 3px solid var(--cognac); padding: 14px 18px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 20px; font-size: 13px; color: var(--ivory-dim); }
   .info-banner strong { color: var(--cognac-light); }
-
+ 
   /* BULK UPLOAD ZONE */
   .upload-zone {
     border: 2px dashed var(--leather-line); border-radius: var(--radius-lg);
@@ -386,7 +386,7 @@
   .error-item:last-child { border-bottom: none; }
   .error-item .row-num { color: var(--brass); font-weight: 600; margin-right: 8px; }
   .error-item .err-text { color: var(--danger); }
-
+ 
   /* RECENT ENTRIES (bottom of each detail page) */
   .recent-section {
     margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--leather-line);
@@ -400,21 +400,21 @@
   }
   .recent-row .when { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
   .recent-row .what { color: var(--ivory-dim); }
-
+ 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: var(--leather-deep); }
   ::-webkit-scrollbar-thumb { background: var(--leather-line); border-radius: 5px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--cognac); }
-
+ 
   .empty-state { text-align: center; padding: 48px; color: var(--muted); }
   .empty-state h4 { font-family: var(--font-display); font-size: 20px; font-weight: 400; color: var(--ivory-dim); margin-bottom: 8px; }
-
+ 
   .helper-link { color: var(--brass); text-decoration: none; border-bottom: 1px dashed var(--brass); font-size: 12px; cursor: pointer; }
   .helper-link:hover { color: var(--cognac-light); }
-
+ 
   .table-scroll { overflow-x: auto; max-height: 600px; overflow-y: auto; }
-
+ 
   /* INSIGHTS PANEL — auto-generated conclusions */
   .insights-section { margin-bottom: 28px; }
   .insights-section .section-title {
@@ -445,7 +445,7 @@
   .insight-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
   .insight-value { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--ivory); line-height: 1.2; }
   .insight-detail { font-size: 12px; color: var(--ivory-dim); margin-top: 6px; line-height: 1.4; }
-
+ 
   /* ALERTS PANEL */
   .alert-row {
     display: flex; align-items: center; gap: 14px; padding: 14px 18px;
@@ -468,7 +468,7 @@
   .alert-count { font-family: var(--font-display); font-size: 26px; font-weight: 500; color: var(--danger); }
   .alert-row.warn .alert-count { color: var(--warning); }
   .alert-row.info .alert-count { color: var(--c1); }
-
+ 
   /* EXECUTIVE SUMMARY — top of dashboard */
   .exec-summary {
     background: linear-gradient(135deg, var(--leather-card) 0%, #eff5fa 100%);
@@ -496,7 +496,7 @@
   }
   .exec-stat .num { font-family: var(--font-display); font-size: 28px; font-weight: 500; color: var(--cognac); }
   .exec-stat .lbl { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
-
+ 
   /* FILTER BAR */
   .filter-bar {
     display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
@@ -522,7 +522,7 @@
   }
   .active-filter span { cursor: pointer; opacity: 0.7; }
   .active-filter span:hover { opacity: 1; }
-
+ 
   /* GLOBAL SEARCH RESULTS */
   .search-result-group { padding: 8px 0; border-bottom: 1px solid var(--leather-line); }
   .search-result-group:last-child { border-bottom: none; }
@@ -540,7 +540,7 @@
   .search-result-item .sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
   .search-result-item .badge { flex-shrink: 0; }
   .search-empty { padding: 24px; text-align: center; color: var(--muted); font-size: 13px; }
-
+ 
   /* PRINT STYLES — for PDF export */
   @media print {
     body { background: white !important; }
@@ -556,7 +556,7 @@
 </style>
 </head>
 <body>
-
+ 
 <!-- ===== LOGIN ===== -->
 <div id="loginScreen">
   <div class="login-stage">
@@ -582,7 +582,7 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- ===== MAIN APP ===== -->
 <div id="app">
   <div class="topbar">
@@ -606,7 +606,7 @@
       <button class="btn-logout" onclick="App.auth.logout()">Sign Out</button>
     </div>
   </div>
-
+ 
   <div class="layout">
     <aside class="sidebar">
       <div class="sidebar-section">
@@ -615,7 +615,7 @@
         <div class="nav-item" data-view="entry" data-sheet=""><span class="nav-icon">+</span> Add Entry</div>
         <div class="nav-item" data-view="bulk" data-sheet=""><span class="nav-icon">⇪</span> Bulk Upload</div>
       </div>
-
+ 
       <div class="sidebar-section">
         <h3>Catalogue</h3>
         <div class="nav-item" data-view="outer" data-sheet="Outer_Material"><span class="nav-icon">◗</span> Outer Material</div>
@@ -630,13 +630,13 @@
         <div class="nav-item" data-view="bomHeaders" data-sheet="BOM_Headers"><span class="nav-icon">◗</span> BOM (Bag Specs)</div>
         <div class="nav-item" data-view="bomLines" data-sheet="BOM_Lines"><span class="nav-icon">◗</span> BOM (Materials)</div>
       </div>
-
+ 
       <div class="sidebar-section">
         <h3>Administration</h3>
         <div class="nav-item" data-view="users" data-sheet="USERS_ADMIN_ONLY"><span class="nav-icon">◇</span> Users</div>
         <div class="nav-item" data-view="logs" data-sheet="LOGS_ADMIN_ONLY"><span class="nav-icon">◇</span> Activity Log</div>
       </div>
-
+ 
       <div class="sidebar-section">
         <h3>Dashlets</h3>
         <div class="dashlet-toggle"><input type="checkbox" id="dl-stock" checked><label for="dl-stock">Stock by Category</label></div>
@@ -652,7 +652,7 @@
         <div class="dashlet-toggle"><input type="checkbox" id="dl-reinforcement" checked><label for="dl-reinforcement">Reinforcement Vendors</label></div>
       </div>
     </aside>
-
+ 
     <main class="main">
       <!-- DASHBOARD -->
       <section id="view-dashboard" class="view active">
@@ -667,9 +667,9 @@
             <button class="btn-secondary" onclick="App.dashboard.loadAll()" title="Refresh data">↻ Refresh</button>
           </div>
         </div>
-
+ 
         <div id="filterBar" style="margin-bottom:24px;"></div>
-
+ 
         <div id="alertsPanel"></div>
         <div id="insightsPanel"></div>
         <div class="kpi-grid" id="kpiGrid"></div>
@@ -692,10 +692,10 @@
           <div class="dashlet" id="dashlet-styles"><h3>Bag Styles by Collection</h3><canvas id="chart-styles"></canvas></div>
           <div class="dashlet" id="dashlet-reinforcement"><h3>Reinforcement by Vendor</h3><canvas id="chart-reinforcement"></canvas></div>
         </div>
-
+ 
         <div id="execSummary" style="margin-top:32px;"></div>
       </section>
-
+ 
       <!-- ADD ENTRY -->
       <section id="view-entry" class="view">
         <div class="page-header">
@@ -719,7 +719,7 @@
           <div class="recent-list" id="entryRecentList"></div>
         </div>
       </section>
-
+ 
       <!-- BULK UPLOAD -->
       <section id="view-bulk" class="view">
         <div class="page-header">
@@ -744,7 +744,7 @@
           <div id="bulkResults" class="upload-result"></div>
         </div>
       </section>
-
+ 
       <!-- DATA VIEWS — generated dynamically -->
       <section id="view-outer" class="view"><div id="page-Outer_Material"></div></section>
       <section id="view-lining" class="view"><div id="page-Lining_Material"></div></section>
@@ -757,7 +757,7 @@
       <section id="view-reinforcement" class="view"><div id="page-Reinforcement"></div></section>
       <section id="view-bomHeaders" class="view"><div id="page-BOM_Headers"></div></section>
       <section id="view-bomLines" class="view"><div id="page-BOM_Lines"></div></section>
-
+ 
       <!-- USERS -->
       <section id="view-users" class="view">
         <div class="page-header">
@@ -769,7 +769,7 @@
         <div style="margin-bottom:24px;"><button class="btn-primary" onclick="App.users.openCreate()">+ Add New User</button></div>
         <div id="usersTable"></div>
       </section>
-
+ 
       <!-- LOGS -->
       <section id="view-logs" class="view">
         <div class="page-header">
@@ -782,7 +782,7 @@
     </main>
   </div>
 </div>
-
+ 
 <!-- ============ MODALS ============ -->
 <div class="modal-bg" id="editModal">
   <div class="modal modal-wide">
@@ -795,7 +795,7 @@
     </div>
   </div>
 </div>
-
+ 
 <div class="modal-bg" id="userModal">
   <div class="modal">
     <h2 id="userModalTitle">Add User</h2>
@@ -831,9 +831,9 @@
     </div>
   </div>
 </div>
-
+ 
 <div class="toast" id="toast"></div>
-
+ 
 <!-- ============================================================
      APP CODE — modular structure for easy extension
      ============================================================
@@ -849,14 +849,14 @@
        App.tables   — per-sheet data tables, edit/delete
        App.users    — user CRUD
        App.logs     — activity log viewer
-
+ 
      To ADD A NEW FEATURE later:
        1. Add config to App.config (schema, role-permissions if needed)
        2. Create a new module: App.myFeature = { init(), render() }
        3. Add a nav item with data-view="myFeature"
        4. Add a <section id="view-myFeature"> to main
        5. Call App.myFeature.init() from App.boot()
-
+ 
      To ADD A NEW DATA CATEGORY:
        1. Add to App.config.SCHEMAS
        2. Add a sidebar nav-item + section
@@ -869,7 +869,7 @@ const App = (() => {
      ========================================================== */
   const config = {
     APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw6HnwKHHO-NP2aVGCMGQWuCK0kOgcpeA4N2nn3YFvV4vMgT_8OXV_74XAc78deWN79/exec',
-
+ 
     SCHEMAS: {
       'Outer_Material':     ['Style_No', 'Style_Name', 'Item_Code', 'Thickness', 'Pattern', 'Color', 'Quantity', 'Date_Added'],
       'Lining_Material':    ['Style_No', 'Style_Name', 'Lining_Item', 'GSM', 'Color', 'Quantity', 'Date_Added'],
@@ -919,7 +919,7 @@ const App = (() => {
       'BOM_Headers': 'bomHeaders', 'BOM_Lines': 'bomLines', 'OTT_Inventory': 'ottInventory'
     }
   };
-
+ 
   /* ==========================================================
      STATE
      ========================================================== */
@@ -934,7 +934,7 @@ const App = (() => {
     bulkParsedRows: null,
     bulkValidRows: null
   };
-
+ 
   /* ==========================================================
      API
      ========================================================== */
@@ -949,7 +949,7 @@ const App = (() => {
       return await res.json();
     }
   };
-
+ 
   /* ==========================================================
      UI — toast, modals, formatters
      ========================================================== */
@@ -978,7 +978,7 @@ const App = (() => {
       return `<span class="badge ${m[role] || 'badge-neutral'}">${role}</span>`;
     }
   };
-
+ 
   /* ==========================================================
      AUTH — login, logout, permission checks
      ========================================================== */
@@ -1052,7 +1052,7 @@ const App = (() => {
       });
     }
   };
-
+ 
   /* ==========================================================
      DASHBOARD — KPIs + charts
      ========================================================== */
@@ -1081,7 +1081,7 @@ const App = (() => {
       }).length;
       const zippers = d['Zippers']?.rows || [];
       const zStock = zippers.reduce((s, r) => s + (Number(r.Balance_Material) || 0), 0);
-
+ 
       const kpis = [];
       if (auth.hasView('Outer_Material'))    kpis.push({ label: 'Outer Material', value: (d['Outer_Material']?.rows || []).length, sub: 'distinct items' });
       if (auth.hasView('Lining_Material'))   kpis.push({ label: 'Lining Material', value: (d['Lining_Material']?.rows || []).length, sub: 'distinct items' });
@@ -1112,7 +1112,7 @@ const App = (() => {
         const totalQty = ott.reduce((s, r) => s + (Number(r.Quantity_Metres) || 0), 0);
         kpis.push({ label: 'OTT Stock', value: totalQty.toFixed(0) + 'm', sub: `${ott.length} items` });
       }
-
+ 
       grid.innerHTML = kpis.map(k => `
         <div class="kpi-card">
           <div class="label">${k.label}</div>
@@ -1124,14 +1124,14 @@ const App = (() => {
       Chart.defaults.color = '#4a6585';
       Chart.defaults.borderColor = '#dde7f2';
       Chart.defaults.font.family = 'Inter Tight';
-
+ 
       dashboard._stock(); dashboard._color(); dashboard._vendor();
       dashboard._approval(); dashboard._zipper(); dashboard._lowstock();
       dashboard._threadvendor(); dashboard._threadstatus(); dashboard._threadlow();
       dashboard._styles(); dashboard._reinforcement();
       dashboard.renderInsights();
       dashboard.renderAlerts();
-
+ 
       if (!auth.hasView('Color_Development')) document.getElementById('dashlet-approval').classList.add('hidden');
       if (!auth.hasView('Zippers')) {
         document.getElementById('dashlet-zipper').classList.add('hidden');
@@ -1148,14 +1148,14 @@ const App = (() => {
       if (!auth.hasView('Reinforcement')) {
         document.getElementById('dashlet-reinforcement').classList.add('hidden');
       }
-
+ 
       ['stock','color','vendor','approval','zipper','lowstock','threadvendor','threadstatus','threadlow','styles','reinforcement'].forEach(n => {
         document.getElementById('dl-' + n).onchange = e => {
           document.getElementById('dashlet-' + n).classList.toggle('hidden', !e.target.checked);
         };
       });
     },
-
+ 
     // Soft pastel 6-color palette (cycles for more values)
     _palette: ['#b8d4e8','#d9c7b8','#c8d9c8','#d9c8d9','#e8d4b8','#c8d4d9','#b8d4e8','#d9c7b8','#c8d9c8','#d9c8d9','#e8d4b8','#c8d4d9'],
     _destroy(k) { if (state.charts[k]) { state.charts[k].destroy(); delete state.charts[k]; } },
@@ -1301,7 +1301,7 @@ const App = (() => {
           <span class="badge badge-warning">${(r.Status || 'No status').slice(0, 20)}</span>
         </div>`).join('') + (lows.length > 12 ? `<div style="padding:10px; color:var(--muted); font-size:11px; text-align:center;">+${lows.length - 12} more</div>` : '');
     },
-
+ 
     _styles() {
       dashboard._destroy('styles');
       const styles = state.data['Styles']?.rows || [];
@@ -1343,16 +1343,16 @@ const App = (() => {
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: '#dde7f2' } } } }
       });
     },
-
+ 
     // ============ SMART INSIGHTS ============
     renderInsights() {
       const container = document.getElementById('insightsPanel');
       const d = state.data;
       const insights = [];
-
+ 
       // 1. Total inventory items across all categories
       const totalItems = Object.keys(d).reduce((s, k) => s + (d[k]?.rows?.length || 0), 0);
-
+ 
       // 2. Most demanded color across all categories
       const allColors = {};
       ['Outer_Material','Lining_Material','Inventory','Threads'].forEach(s => {
@@ -1363,7 +1363,7 @@ const App = (() => {
         });
       });
       const topColor = Object.entries(allColors).sort((a,b) => b[1] - a[1])[0];
-
+ 
       // 3. Top vendor by mentions
       const allVendors = {};
       ['Inventory','Zippers','Threads'].forEach(s => {
@@ -1374,24 +1374,24 @@ const App = (() => {
         });
       });
       const topVendor = Object.entries(allVendors).sort((a,b) => b[1] - a[1])[0];
-
+ 
       // 4. Pending approvals in color development
       const pendingApprovals = (d['Color_Development']?.rows || []).filter(r => {
         const s = String(r.Coats_Status || '').toLowerCase();
         return s.includes('develop') || s.includes('pending') || (!s.includes('approved') && s);
       }).length;
-
+ 
       // 5. Threads needing action
       const threadsToOrder = (d['Threads']?.rows || []).filter(r => {
         const s = String(r.Status || '').toUpperCase();
         return s.includes('TO ORDER') || s.includes('TO DEVELOP') || s.includes('TO PLACE');
       }).length;
-
+ 
       // 6. Zipper stock health
       const zippers = d['Zippers']?.rows || [];
       const lowZippers = zippers.filter(r => { const n = Number(r.Balance_Material); return !isNaN(n) && n < 50; }).length;
       const zHealth = zippers.length > 0 ? Math.round((1 - lowZippers / zippers.length) * 100) : 100;
-
+ 
       // 7. Most common material code
       const matCodes = {};
       (d['Outer_Material']?.rows || []).forEach(r => {
@@ -1399,52 +1399,52 @@ const App = (() => {
         if (code) matCodes[code] = (matCodes[code] || 0) + 1;
       });
       const topMaterial = Object.entries(matCodes).sort((a,b) => b[1] - a[1])[0];
-
+ 
       // 8. Vendor diversity
       const vendorCount = Object.keys(allVendors).length;
-
+ 
       // Build the cards
       if (totalItems > 0) insights.push({
         icon: '📦', cls: 'info', title: 'Total Items Tracked',
         value: totalItems.toLocaleString(), detail: `across ${Object.keys(d).filter(k => (d[k]?.rows?.length || 0) > 0).length} categories`
       });
-
+ 
       if (topColor) insights.push({
         icon: '🎨', cls: 'good', title: 'Most Demanded Color',
         value: topColor[0], detail: `${topColor[1]} entries across catalogue`
       });
-
+ 
       if (topVendor) insights.push({
         icon: '🏭', cls: 'info', title: 'Top Vendor',
         value: topVendor[0], detail: `${topVendor[1]} items supplied · ${vendorCount} vendors total`
       });
-
+ 
       if (topMaterial) insights.push({
         icon: '🧵', cls: 'info', title: 'Most Used Material',
         value: topMaterial[0], detail: `${topMaterial[1]} color variants in stock`
       });
-
+ 
       if (pendingApprovals > 0) insights.push({
         icon: '⏳', cls: 'warn', title: 'Awaiting Approval',
         value: pendingApprovals, detail: 'color development items pending decision'
       });
-
+ 
       if (threadsToOrder > 0) insights.push({
         icon: '📋', cls: 'alert', title: 'Threads to Order',
         value: threadsToOrder, detail: 'need procurement action'
       });
-
+ 
       if (zippers.length > 0) insights.push({
         icon: zHealth >= 80 ? '✓' : zHealth >= 50 ? '⚠' : '⚡', cls: zHealth >= 80 ? 'good' : zHealth >= 50 ? 'warn' : 'alert',
         title: 'Zipper Stock Health', value: zHealth + '%',
         detail: `${zippers.length - lowZippers} of ${zippers.length} above threshold`
       });
-
+ 
       if (Object.keys(allColors).length > 0) insights.push({
         icon: '🌈', cls: 'info', title: 'Color Variety',
         value: Object.keys(allColors).length, detail: 'unique colors in active inventory'
       });
-
+ 
       // CEO-focused: styles catalogue
       const styles = d['Styles']?.rows || [];
       if (styles.length > 0) {
@@ -1467,7 +1467,7 @@ const App = (() => {
           detail: `${topVendor[0]} supplies ${topShare}% of items${topShare > 50 ? ' — consider diversifying' : ' (healthy mix)'}`
         });
       }
-
+ 
       // CEO-focused: development pipeline strength
       const colorDev = d['Color_Development']?.rows || [];
       if (colorDev.length > 0) {
@@ -1484,7 +1484,7 @@ const App = (() => {
           detail: `${approved} of ${colorDev.length} colors approved`
         });
       }
-
+ 
       container.innerHTML = `
         <div class="insights-section">
           <div class="section-title">Smart Insights · Auto-generated conclusions</div>
@@ -1498,12 +1498,12 @@ const App = (() => {
           </div>
         </div>`;
     },
-
+ 
     renderAlerts() {
       const container = document.getElementById('alertsPanel');
       const d = state.data;
       const alerts = [];
-
+ 
       // Zippers with 0 stock
       const zerosZip = (d['Zippers']?.rows || []).filter(r => Number(r.Balance_Material) === 0).length;
       if (zerosZip > 0) alerts.push({
@@ -1511,7 +1511,7 @@ const App = (() => {
         desc: `${zerosZip} zipper code${zerosZip === 1 ? '' : 's'} have zero balance — order immediately`,
         count: zerosZip
       });
-
+ 
       // Zippers low stock
       const lowZip = (d['Zippers']?.rows || []).filter(r => { const n = Number(r.Balance_Material); return n > 0 && n < 50; }).length;
       if (lowZip > 0) alerts.push({
@@ -1519,7 +1519,7 @@ const App = (() => {
         desc: `${lowZip} zipper code${lowZip === 1 ? '' : 's'} below 50 units`,
         count: lowZip
       });
-
+ 
       // Threads to order
       const tOrder = (d['Threads']?.rows || []).filter(r => {
         const s = String(r.Status || '').toUpperCase();
@@ -1530,7 +1530,7 @@ const App = (() => {
         desc: `${tOrder} thread color${tOrder === 1 ? '' : 's'} marked TO ORDER — initiate procurement`,
         count: tOrder
       });
-
+ 
       // Threads to develop
       const tDev = (d['Threads']?.rows || []).filter(r => String(r.Status || '').toUpperCase().includes('TO DEVELOP')).length;
       if (tDev > 0) alerts.push({
@@ -1538,7 +1538,7 @@ const App = (() => {
         desc: `${tDev} thread color${tDev === 1 ? '' : 's'} require development with vendor`,
         count: tDev
       });
-
+ 
       // Pending colors in color development
       const cDev = (d['Color_Development']?.rows || []).filter(r => {
         const s = String(r.Coats_Status || '').toLowerCase();
@@ -1549,7 +1549,7 @@ const App = (() => {
         desc: `${cDev} color${cDev === 1 ? '' : 's'} awaiting Coats/Serafil development`,
         count: cDev
       });
-
+ 
       // Outer material with zero quantity (pending receipts)
       const omPending = (d['Outer_Material']?.rows || []).filter(r => Number(r.Quantity) === 0).length;
       if (omPending > 0) alerts.push({
@@ -1557,7 +1557,7 @@ const App = (() => {
         desc: `${omPending} material${omPending === 1 ? '' : 's'} ordered but not yet received`,
         count: omPending
       });
-
+ 
       // Threads missing all sizes
       const tMissing = (d['Threads']?.rows || []).filter(r => {
         const total = (Number(r.Size_20) || 0) + (Number(r.Size_40) || 0) + (Number(r.Size_60) || 0);
@@ -1568,7 +1568,7 @@ const App = (() => {
         desc: `${tMissing} thread record${tMissing === 1 ? '' : 's'} have no size/quantity recorded`,
         count: tMissing
       });
-
+ 
       if (alerts.length === 0) {
         container.innerHTML = `
           <div class="insights-section">
@@ -1582,7 +1582,7 @@ const App = (() => {
           </div>`;
         return;
       }
-
+ 
       container.innerHTML = `
         <div class="insights-section">
           <div class="section-title">Action Required · ${alerts.length} live alert${alerts.length === 1 ? '' : 's'}</div>
@@ -1596,20 +1596,20 @@ const App = (() => {
             </div>`).join('')}
         </div>`;
     },
-
+ 
     // ============ EXECUTIVE SUMMARY — CEO-style narrative ============
     renderExecSummary() {
       const c = document.getElementById('execSummary');
       if (!c) return;
       const d = state.data;
-
+ 
       // Total items
       const totalItems = ['Outer_Material','Lining_Material','Inventory','Color_Development','Zippers','Threads','Styles','Reinforcement','BOM_Headers','OTT_Inventory']
         .reduce((s, k) => s + (d[k]?.rows?.length || 0), 0);
-
+ 
       // Style count
       const styleCount = (d['Styles']?.rows || []).length;
-
+ 
       // Vendor count
       const vendors = new Set();
       ['Inventory','Zippers','Threads'].forEach(s => {
@@ -1618,13 +1618,13 @@ const App = (() => {
           if (v && v !== 'UNKNOWN') vendors.add(v);
         });
       });
-
+ 
       // Total quantity of outer material in meters
       const omMeters = (d['Outer_Material']?.rows || []).reduce((s, r) => s + (Number(r.Quantity) || 0), 0);
-
+ 
       // Zipper stock
       const zStock = (d['Zippers']?.rows || []).reduce((s, r) => s + (Number(r.Balance_Material) || 0), 0);
-
+ 
       // Unique colors
       const allColors = new Set();
       ['Outer_Material','Lining_Material','Inventory','Threads'].forEach(s => {
@@ -1633,7 +1633,7 @@ const App = (() => {
           if (c) allColors.add(c.toLowerCase());
         });
       });
-
+ 
       // Actions needed
       const actionItems =
         (d['Zippers']?.rows || []).filter(r => Number(r.Balance_Material) < 50).length +
@@ -1641,17 +1641,17 @@ const App = (() => {
           const s = String(r.Status || '').toUpperCase();
           return s.includes('TO ORDER') || s.includes('TO PLACE') || s.includes('TO DEVELOP');
         }).length;
-
+ 
       // Build the narrative
       const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
       document.getElementById('todayDate').textContent = today;
-
+ 
       const narrative = `
         The catalogue currently tracks <strong>${totalItems.toLocaleString()} items</strong>${styleCount > 0 ? ` across <strong>${styleCount} bag styles</strong> and` : ' across'}
         <strong>${vendors.size} vendor partners</strong>,
         spanning <strong>${allColors.size} unique colors</strong>${actionItems > 0 ? `. <strong>${actionItems} items</strong> need procurement action.` : '. All stock levels are healthy.'}
       `;
-
+ 
       c.innerHTML = `
         <div class="exec-summary">
           <div class="label">Executive Summary · ${today}</div>
@@ -1667,13 +1667,13 @@ const App = (() => {
           </div>
         </div>`;
     },
-
+ 
     // ============ QUICK FILTERS ============
     renderFilters() {
       const c = document.getElementById('filterBar');
       if (!c) return;
       const d = state.data;
-
+ 
       // Collect unique vendors and categories from current data
       const vendors = new Set();
       ['Inventory','Zippers','Threads'].forEach(s => {
@@ -1682,13 +1682,13 @@ const App = (() => {
           if (v && v.toUpperCase() !== 'UNKNOWN') vendors.add(v);
         });
       });
-
+ 
       const categories = ['Outer_Material','Lining_Material','Inventory','Color_Development','Zippers','Threads']
         .filter(s => auth.hasView(s));
-
+ 
       const activeVendor = state.filters?.vendor || '';
       const activeCategory = state.filters?.category || '';
-
+ 
       c.innerHTML = `
         <div class="filter-bar">
           <span class="filter-label">Filter:</span>
@@ -1749,14 +1749,14 @@ const App = (() => {
       });
       return result;
     },
-
+ 
     // ============ PRINT / PDF EXPORT ============
     printReport() {
       ui.toast('Opening print dialog…');
       setTimeout(() => window.print(), 300);
     }
   };
-
+ 
   /* ==========================================================
      GLOBAL SEARCH — find anything across all sheets
      ========================================================== */
@@ -1769,7 +1769,7 @@ const App = (() => {
         return;
       }
       results.style.display = 'block';
-
+ 
       const groups = {};
       Object.keys(state.data).forEach(sheet => {
         const rows = state.data[sheet]?.rows || [];
@@ -1778,13 +1778,13 @@ const App = (() => {
         }).slice(0, 5); // max 5 per category
         if (matches.length > 0) groups[sheet] = matches;
       });
-
+ 
       const total = Object.values(groups).reduce((s, m) => s + m.length, 0);
       if (total === 0) {
         results.innerHTML = `<div class="search-empty">No results for "<strong>${query}</strong>"</div>`;
         return;
       }
-
+ 
       results.innerHTML = Object.keys(groups).map(sheet => {
         const headers = App.config.SCHEMAS[sheet] || [];
         return `
@@ -1821,7 +1821,7 @@ const App = (() => {
       });
     }
   };
-
+ 
   /* ==========================================================
      ENTRY — adaptive form
      ========================================================== */
@@ -1876,7 +1876,7 @@ const App = (() => {
     },
     reset() { document.querySelectorAll('#entryFormFields [name]').forEach(i => i.value = ''); }
   };
-
+ 
   /* ==========================================================
      BULK UPLOAD — parse Excel/CSV, validate, batch import
      ========================================================== */
@@ -1909,7 +1909,7 @@ const App = (() => {
       if (!file) return;
       const out = document.getElementById('bulkResults');
       out.innerHTML = '<div class="empty-state"><h4>Reading file…</h4></div>';
-
+ 
       try {
         const buf = await file.arrayBuffer();
         const wb = XLSX.read(buf, { type: 'array', cellDates: true });
@@ -1928,22 +1928,22 @@ const App = (() => {
       const dateFields = config.DATE_FIELDS;
       const numFields = config.NUM_FIELDS;
       const enumFields = config.ENUM_FIELDS;
-
+ 
       const errors = [];
       const valid = [];
       const fileHeaders = Object.keys(rows[0]);
       const missingHeaders = schema.filter(h => !fileHeaders.includes(h));
-
+ 
       rows.forEach((row, idx) => {
         const rowNum = idx + 2; // +1 for header, +1 for 0-index
         const rowErrors = [];
         const cleaned = {};
-
+ 
         schema.forEach(field => {
           let v = row[field];
           if (v === undefined) v = '';
           v = String(v).trim();
-
+ 
           if (required.includes(field) && !v) {
             rowErrors.push(`missing required "${field}"`);
             return;
@@ -1963,11 +1963,11 @@ const App = (() => {
           }
           cleaned[field] = v;
         });
-
+ 
         if (rowErrors.length > 0) errors.push({ row: rowNum, errors: rowErrors });
         else valid.push(cleaned);
       });
-
+ 
       state.bulkValidRows = valid;
       bulk.renderValidation(cat, rows.length, valid.length, errors, missingHeaders);
     },
@@ -2007,7 +2007,7 @@ const App = (() => {
       if (!state.bulkValidRows || state.bulkValidRows.length === 0) return;
       const out = document.getElementById('bulkResults');
       out.innerHTML += '<div style="margin-top:16px; color:var(--brass);">Importing…</div>';
-
+ 
       // Chunk to avoid Apps Script timeouts on huge files
       const chunkSize = 200;
       let imported = 0;
@@ -2027,7 +2027,7 @@ const App = (() => {
       state.bulkParsedRows = null; state.bulkValidRows = null;
     }
   };
-
+ 
   /* ==========================================================
      TABLES — per-category data view with edit/delete + recent
      ========================================================== */
@@ -2045,13 +2045,13 @@ const App = (() => {
       }
       const data = state.data[sheetName];
       if (!data || !data.rows) { container.innerHTML = '<div class="empty-state"><h4>No data</h4></div>'; return; }
-
+ 
       const headers = config.SCHEMAS[sheetName] || data.headers;
       const showActions = state.perms.edit || state.perms.delete;
       const titleParts = sheetName.split('_');
       const lastWord = titleParts.pop();
       const firstPart = titleParts.join(' ');
-
+ 
       container.innerHTML = `
         <div class="page-header">
           <div class="page-eyebrow">Catalogue</div>
@@ -2165,7 +2165,7 @@ const App = (() => {
       else ui.toast('Delete failed: ' + res.error, 'error');
     }
   };
-
+ 
   /* ==========================================================
      USERS
      ========================================================== */
@@ -2277,7 +2277,7 @@ const App = (() => {
       else ui.toast('Failed: ' + res.error, 'error');
     }
   };
-
+ 
   /* ==========================================================
      LOGS
      ========================================================== */
@@ -2306,7 +2306,7 @@ const App = (() => {
         </div>`;
     }
   };
-
+ 
   /* ==========================================================
      BOOT
      ========================================================== */
@@ -2324,7 +2324,7 @@ const App = (() => {
       });
     });
     document.getElementById('loginPass').addEventListener('keypress', e => { if (e.key === 'Enter') auth.login(); });
-
+ 
     // Keyboard shortcuts
     document.addEventListener('keydown', e => {
       // Ctrl/Cmd + K = focus global search
@@ -2339,14 +2339,14 @@ const App = (() => {
         if (sr) sr.style.display = 'none';
       }
     });
-
+ 
     bulk.init();
     search.init();
   }
-
+ 
   return { config, state, api, ui, auth, dashboard, entry, bulk, tables, users, logs, search, boot };
 })();
-
+ 
 App.boot();
 </script>
 </body>
