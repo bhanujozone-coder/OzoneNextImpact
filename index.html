@@ -38,19 +38,19 @@
     --success:         #6bbf94;
     --warning:         #e8b96b;
 
-    /* Rich chart palette — 12 distinguishable colors */
-    --c1:  #6b9ec9;   /* soft blue */
-    --c2:  #f4a76b;   /* warm orange */
-    --c3:  #6bbf94;   /* sage green */
-    --c4:  #b88dd9;   /* lavender */
-    --c5:  #e8b96b;   /* amber */
-    --c6:  #5dc0c8;   /* teal */
-    --c7:  #d96b94;   /* rose pink */
-    --c8:  #8db8d9;   /* sky blue */
-    --c9:  #c4a96b;   /* gold */
-    --c10: #7eb6a8;   /* mint */
-    --c11: #d99c7e;   /* coral */
-    --c12: #9c8dd9;   /* periwinkle */
+    /* Rich chart palette — soft pastel 6-color scheme (lighter, calmer) */
+    --c1:  #b8d4e8;   /* soft sky blue */
+    --c2:  #d9c7b8;   /* soft beige */
+    --c3:  #c8d9c8;   /* sage mist */
+    --c4:  #d9c8d9;   /* dusty lavender */
+    --c5:  #e8d4b8;   /* cream peach */
+    --c6:  #c8d4d9;   /* slate mist */
+    --c7:  #b8d4e8;   /* repeat */
+    --c8:  #d9c7b8;
+    --c9:  #c8d9c8;
+    --c10: #d9c8d9;
+    --c11: #e8d4b8;
+    --c12: #c8d4d9;
 
     --font-display: 'Fraunces', Georgia, serif;
     --font-body: 'Inter Tight', -apple-system, sans-serif;
@@ -624,6 +624,11 @@
         <div class="nav-item" data-view="colorDev" data-sheet="Color_Development"><span class="nav-icon">◗</span> Color Development</div>
         <div class="nav-item" data-view="zippers" data-sheet="Zippers"><span class="nav-icon">◗</span> Zippers</div>
         <div class="nav-item" data-view="threads" data-sheet="Threads"><span class="nav-icon">◗</span> Threads</div>
+        <div class="nav-item" data-view="ottInventory" data-sheet="OTT_Inventory"><span class="nav-icon">◗</span> OTT Inventory</div>
+        <div class="nav-item" data-view="styles" data-sheet="Styles"><span class="nav-icon">◗</span> Styles</div>
+        <div class="nav-item" data-view="reinforcement" data-sheet="Reinforcement"><span class="nav-icon">◗</span> Reinforcement</div>
+        <div class="nav-item" data-view="bomHeaders" data-sheet="BOM_Headers"><span class="nav-icon">◗</span> BOM (Bag Specs)</div>
+        <div class="nav-item" data-view="bomLines" data-sheet="BOM_Lines"><span class="nav-icon">◗</span> BOM (Materials)</div>
       </div>
 
       <div class="sidebar-section">
@@ -643,6 +648,8 @@
         <div class="dashlet-toggle"><input type="checkbox" id="dl-threadvendor" checked><label for="dl-threadvendor">Thread Vendors</label></div>
         <div class="dashlet-toggle"><input type="checkbox" id="dl-threadstatus" checked><label for="dl-threadstatus">Thread Status</label></div>
         <div class="dashlet-toggle"><input type="checkbox" id="dl-threadlow" checked><label for="dl-threadlow">Thread Low Stock</label></div>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-styles" checked><label for="dl-styles">Styles by Collection</label></div>
+        <div class="dashlet-toggle"><input type="checkbox" id="dl-reinforcement" checked><label for="dl-reinforcement">Reinforcement Vendors</label></div>
       </div>
     </aside>
 
@@ -682,6 +689,8 @@
             <h3>Threads — Missing Sizes</h3>
             <div id="threadLowList" style="max-height:300px; overflow-y:auto;"></div>
           </div>
+          <div class="dashlet" id="dashlet-styles"><h3>Bag Styles by Collection</h3><canvas id="chart-styles"></canvas></div>
+          <div class="dashlet" id="dashlet-reinforcement"><h3>Reinforcement by Vendor</h3><canvas id="chart-reinforcement"></canvas></div>
         </div>
 
         <div id="execSummary" style="margin-top:32px;"></div>
@@ -743,6 +752,11 @@
       <section id="view-colorDev" class="view"><div id="page-Color_Development"></div></section>
       <section id="view-zippers" class="view"><div id="page-Zippers"></div></section>
       <section id="view-threads" class="view"><div id="page-Threads"></div></section>
+      <section id="view-ottInventory" class="view"><div id="page-OTT_Inventory"></div></section>
+      <section id="view-styles" class="view"><div id="page-Styles"></div></section>
+      <section id="view-reinforcement" class="view"><div id="page-Reinforcement"></div></section>
+      <section id="view-bomHeaders" class="view"><div id="page-BOM_Headers"></div></section>
+      <section id="view-bomLines" class="view"><div id="page-BOM_Lines"></div></section>
 
       <!-- USERS -->
       <section id="view-users" class="view">
@@ -804,6 +818,11 @@
         <label><input type="checkbox" value="Color_Development" class="view-cb"> Color Development</label>
         <label><input type="checkbox" value="Zippers" class="view-cb"> Zippers</label>
         <label><input type="checkbox" value="Threads" class="view-cb"> Threads</label>
+        <label><input type="checkbox" value="OTT_Inventory" class="view-cb"> OTT Inventory</label>
+        <label><input type="checkbox" value="Styles" class="view-cb"> Styles</label>
+        <label><input type="checkbox" value="Reinforcement" class="view-cb"> Reinforcement</label>
+        <label><input type="checkbox" value="BOM_Headers" class="view-cb"> BOM Headers</label>
+        <label><input type="checkbox" value="BOM_Lines" class="view-cb"> BOM Lines</label>
       </div>
     </div>
     <div class="form-actions">
@@ -857,7 +876,12 @@ const App = (() => {
       'Inventory':          ['S_No', 'Material', 'Code', 'Colour_Name', 'Vendor', 'Thread_Code', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Date_Added'],
       'Color_Development':  ['Code', 'Leather_Lining_Name', 'Coats_Code', 'Coats_Dev_Date', 'Coats_Status', 'Serafil_Code', 'Serafil_Dev_Date', 'Serafil_Status'],
       'Zippers':            ['S_No', 'Zipper_Code', 'Approval_Status', 'Balance_Material', 'Vendor', 'Date_Added'],
-      'Threads':            ['Sr_No', 'Category', 'Material_Type', 'Colour', 'Code_No', 'Vendor', 'Thread_Code', 'Size_20', 'Size_40', 'Size_60', 'Quality', 'Thread_Ref', 'Status', 'Remarks']
+      'Threads':            ['Sr_No', 'Category', 'Material_Type', 'Colour', 'Code_No', 'Vendor', 'Thread_Code', 'Size_20', 'Size_40', 'Size_60', 'Quality', 'Thread_Ref', 'Status', 'Remarks'],
+      'Styles':             ['Sr_No', 'Collection', 'Collection_Name', 'Style_Name', 'Naming', 'Total_Colorways', 'Colorways', 'Status', 'Image_URL', 'Notes'],
+      'Reinforcement':      ['Sr_No', 'Vendor', 'Material_Item', 'Used_In_Count', 'Bags_Using', 'Status', 'Notes'],
+      'BOM_Headers':        ['Style_ID', 'Style_Code', 'Bag_Name', 'Total_Materials', 'Leather_Count', 'Lining_Count', 'Reinforcement_Count', 'Status', 'Source_File'],
+      'BOM_Lines':          ['Style_ID', 'Style_Code', 'Bag_Name', 'Material_Type', 'Material_Description', 'Total_Sq_Mtr', 'Quantity', 'Source_File'],
+      'OTT_Inventory':      ['S_No', 'Material_Code', 'Pattern', 'Color', 'Quantity_Metres', 'Date_Received']
     },
     REQUIRED_FIELDS: {
       'Outer_Material':     ['Style_No', 'Style_Name', 'Item_Code'],
@@ -865,24 +889,34 @@ const App = (() => {
       'Inventory':          ['Material', 'Code'],
       'Color_Development':  ['Code', 'Leather_Lining_Name'],
       'Zippers':            ['Zipper_Code'],
-      'Threads':            ['Colour', 'Vendor']
+      'Threads':            ['Colour', 'Vendor'],
+      'Styles':             ['Collection', 'Style_Name'],
+      'Reinforcement':      ['Material_Item'],
+      'BOM_Headers':        ['Style_Code'],
+      'BOM_Lines':          ['Style_Code', 'Material_Description'],
+      'OTT_Inventory':      ['Material_Code', 'Color']
     },
-    DATE_FIELDS: ['Date_Added', 'Coats_Dev_Date', 'Serafil_Dev_Date'],
-    NUM_FIELDS: ['Quantity', 'GSM', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Balance_Material', 'S_No', 'Sr_No', 'Size_20', 'Size_40', 'Size_60'],
+    DATE_FIELDS: ['Date_Added', 'Coats_Dev_Date', 'Serafil_Dev_Date', 'Date_Received'],
+    NUM_FIELDS: ['Quantity', 'GSM', 'Thickness_20', 'Thickness_40', 'Thickness_60', 'Balance_Material', 'S_No', 'Sr_No', 'Size_20', 'Size_40', 'Size_60', 'Total_Colorways', 'Used_In_Count', 'Total_Materials', 'Leather_Count', 'Lining_Count', 'Reinforcement_Count', 'Total_Sq_Mtr', 'Quantity_Metres'],
     ENUM_FIELDS: {
       'Approval_Status': ['Approved', 'Not Approved', 'Pending'],
       'Coats_Status':    ['Approved', 'Not Approved', 'Given To Develop', 'Pending'],
       'Serafil_Status':  ['Approved', 'Not Approved', 'Given To Develop', 'Pending'],
-      'Material_Type':   ['Outer', 'Lining'],
-      'Category':        ['NPT', 'OTT', 'T2T', 'LNT', 'Other']
+      'Material_Type':   ['Outer', 'Lining', 'Leather', 'Reinforcement', 'Zipper', 'Thread', 'Material'],
+      'Category':        ['NPT', 'OTT', 'T2T', 'LNT', 'Other'],
+      'Collection':      ['The Pleat', 'The Curve', 'The Cinch', 'The Core', 'The Column', 'The Fold']
     },
     VIEW_TO_SHEET: {
       'outer': 'Outer_Material', 'lining': 'Lining_Material', 'inventory': 'Inventory',
-      'colorDev': 'Color_Development', 'zippers': 'Zippers', 'threads': 'Threads'
+      'colorDev': 'Color_Development', 'zippers': 'Zippers', 'threads': 'Threads',
+      'styles': 'Styles', 'reinforcement': 'Reinforcement',
+      'bomHeaders': 'BOM_Headers', 'bomLines': 'BOM_Lines', 'ottInventory': 'OTT_Inventory'
     },
     SHEET_TO_VIEW: {
       'Outer_Material': 'outer', 'Lining_Material': 'lining', 'Inventory': 'inventory',
-      'Color_Development': 'colorDev', 'Zippers': 'zippers', 'Threads': 'threads'
+      'Color_Development': 'colorDev', 'Zippers': 'zippers', 'Threads': 'threads',
+      'Styles': 'styles', 'Reinforcement': 'reinforcement',
+      'BOM_Headers': 'bomHeaders', 'BOM_Lines': 'bomLines', 'OTT_Inventory': 'ottInventory'
     }
   };
 
@@ -1059,6 +1093,25 @@ const App = (() => {
         const inStock = threads.filter(r => String(r.Status || '').toUpperCase().includes('IN STOCK')).length;
         kpis.push({ label: 'Threads', value: inStock + ' / ' + threads.length, sub: 'in stock' });
       }
+      if (auth.hasView('Styles')) {
+        const styles = d['Styles']?.rows || [];
+        const totalColorways = styles.reduce((s, r) => s + (Number(r.Total_Colorways) || 0), 0);
+        kpis.push({ label: 'Bag Styles', value: styles.length, sub: `${totalColorways} colorway variants` });
+      }
+      if (auth.hasView('Reinforcement')) {
+        const rein = d['Reinforcement']?.rows || [];
+        const vendors = new Set(rein.map(r => String(r.Vendor || '').trim()).filter(Boolean));
+        kpis.push({ label: 'Reinforcement', value: rein.length, sub: `${vendors.size} vendors` });
+      }
+      if (auth.hasView('BOM_Headers')) {
+        const bom = d['BOM_Headers']?.rows || [];
+        kpis.push({ label: 'BOM Specs', value: bom.length, sub: 'bag specifications' });
+      }
+      if (auth.hasView('OTT_Inventory')) {
+        const ott = d['OTT_Inventory']?.rows || [];
+        const totalQty = ott.reduce((s, r) => s + (Number(r.Quantity_Metres) || 0), 0);
+        kpis.push({ label: 'OTT Stock', value: totalQty.toFixed(0) + 'm', sub: `${ott.length} items` });
+      }
 
       grid.innerHTML = kpis.map(k => `
         <div class="kpi-card">
@@ -1075,6 +1128,7 @@ const App = (() => {
       dashboard._stock(); dashboard._color(); dashboard._vendor();
       dashboard._approval(); dashboard._zipper(); dashboard._lowstock();
       dashboard._threadvendor(); dashboard._threadstatus(); dashboard._threadlow();
+      dashboard._styles(); dashboard._reinforcement();
       dashboard.renderInsights();
       dashboard.renderAlerts();
 
@@ -1088,16 +1142,22 @@ const App = (() => {
         document.getElementById('dashlet-threadstatus').classList.add('hidden');
         document.getElementById('dashlet-threadlow').classList.add('hidden');
       }
+      if (!auth.hasView('Styles')) {
+        document.getElementById('dashlet-styles').classList.add('hidden');
+      }
+      if (!auth.hasView('Reinforcement')) {
+        document.getElementById('dashlet-reinforcement').classList.add('hidden');
+      }
 
-      ['stock','color','vendor','approval','zipper','lowstock','threadvendor','threadstatus','threadlow'].forEach(n => {
+      ['stock','color','vendor','approval','zipper','lowstock','threadvendor','threadstatus','threadlow','styles','reinforcement'].forEach(n => {
         document.getElementById('dl-' + n).onchange = e => {
           document.getElementById('dashlet-' + n).classList.toggle('hidden', !e.target.checked);
         };
       });
     },
 
-    // Rich 12-color palette for clearly distinguishable chart segments
-    _palette: ['#6b9ec9','#f4a76b','#6bbf94','#b88dd9','#e8b96b','#5dc0c8','#d96b94','#8db8d9','#c4a96b','#7eb6a8','#d99c7e','#9c8dd9'],
+    // Soft pastel 6-color palette (cycles for more values)
+    _palette: ['#b8d4e8','#d9c7b8','#c8d9c8','#d9c8d9','#e8d4b8','#c8d4d9','#b8d4e8','#d9c7b8','#c8d9c8','#d9c8d9','#e8d4b8','#c8d4d9'],
     _destroy(k) { if (state.charts[k]) { state.charts[k].destroy(); delete state.charts[k]; } },
     _stock() {
       dashboard._destroy('stock');
@@ -1242,6 +1302,48 @@ const App = (() => {
         </div>`).join('') + (lows.length > 12 ? `<div style="padding:10px; color:var(--muted); font-size:11px; text-align:center;">+${lows.length - 12} more</div>` : '');
     },
 
+    _styles() {
+      dashboard._destroy('styles');
+      const styles = state.data['Styles']?.rows || [];
+      if (styles.length === 0) {
+        const ctx = document.getElementById('chart-styles');
+        if (ctx) {
+          const parent = ctx.parentElement;
+          parent.innerHTML = '<h3>Bag Styles by Collection</h3><div class="empty-state"><h4>No styles yet</h4><p>Add styles via Bulk Upload or Add Entry.</p></div>';
+        }
+        return;
+      }
+      const grouped = {};
+      styles.forEach(r => {
+        const col = String(r.Collection || 'Other').trim();
+        if (col) grouped[col] = (grouped[col] || 0) + 1;
+      });
+      state.charts.styles = new Chart(document.getElementById('chart-styles'), {
+        type: 'doughnut',
+        data: { labels: Object.keys(grouped), datasets: [{ data: Object.values(grouped), backgroundColor: dashboard._palette, borderColor: '#ffffff', borderWidth: 3, hoverOffset: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 12 }, padding: 14, usePointStyle: true } }, tooltip: { callbacks: { label: (c) => ` ${c.label}: ${c.parsed} styles` } } } }
+      });
+    },
+    _reinforcement() {
+      dashboard._destroy('reinforcement');
+      const rein = state.data['Reinforcement']?.rows || [];
+      if (rein.length === 0) {
+        const ctx = document.getElementById('chart-reinforcement');
+        if (ctx) ctx.parentElement.innerHTML = '<h3>Reinforcement by Vendor</h3><div class="empty-state"><h4>No reinforcement data yet</h4></div>';
+        return;
+      }
+      const grouped = {};
+      rein.forEach(r => {
+        const v = String(r.Vendor || 'Unknown').trim();
+        if (v) grouped[v] = (grouped[v] || 0) + 1;
+      });
+      state.charts.reinforcement = new Chart(document.getElementById('chart-reinforcement'), {
+        type: 'bar',
+        data: { labels: Object.keys(grouped), datasets: [{ label: 'Items', data: Object.values(grouped), backgroundColor: dashboard._palette, borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: '#dde7f2' } } } }
+      });
+    },
+
     // ============ SMART INSIGHTS ============
     renderInsights() {
       const container = document.getElementById('insightsPanel');
@@ -1343,7 +1445,17 @@ const App = (() => {
         value: Object.keys(allColors).length, detail: 'unique colors in active inventory'
       });
 
-      // CEO-focused: vendor concentration risk
+      // CEO-focused: styles catalogue
+      const styles = d['Styles']?.rows || [];
+      if (styles.length > 0) {
+        const totalColorways = styles.reduce((s, r) => s + (Number(r.Total_Colorways) || 0), 0);
+        const collections = new Set(styles.map(s => String(s.Collection || '').trim()).filter(Boolean));
+        insights.push({
+          icon: '', cls: 'info', title: 'Style Catalogue',
+          value: styles.length + ' styles',
+          detail: `${collections.size} collections · ${totalColorways} colorway variants`
+        });
+      }
       if (topVendor && Object.keys(allVendors).length > 0) {
         const totalVendorMentions = Object.values(allVendors).reduce((s, v) => s + v, 0);
         const topShare = Math.round((topVendor[1] / totalVendorMentions) * 100);
@@ -1492,8 +1604,11 @@ const App = (() => {
       const d = state.data;
 
       // Total items
-      const totalItems = ['Outer_Material','Lining_Material','Inventory','Color_Development','Zippers','Threads']
+      const totalItems = ['Outer_Material','Lining_Material','Inventory','Color_Development','Zippers','Threads','Styles','Reinforcement','BOM_Headers','OTT_Inventory']
         .reduce((s, k) => s + (d[k]?.rows?.length || 0), 0);
+
+      // Style count
+      const styleCount = (d['Styles']?.rows || []).length;
 
       // Vendor count
       const vendors = new Set();
@@ -1532,8 +1647,8 @@ const App = (() => {
       document.getElementById('todayDate').textContent = today;
 
       const narrative = `
-        The catalogue currently tracks <strong>${totalItems.toLocaleString()} items</strong>
-        across <strong>${vendors.size} vendor partners</strong>,
+        The catalogue currently tracks <strong>${totalItems.toLocaleString()} items</strong>${styleCount > 0 ? ` across <strong>${styleCount} bag styles</strong> and` : ' across'}
+        <strong>${vendors.size} vendor partners</strong>,
         spanning <strong>${allColors.size} unique colors</strong>${actionItems > 0 ? `. <strong>${actionItems} items</strong> need procurement action.` : '. All stock levels are healthy.'}
       `;
 
@@ -1543,6 +1658,7 @@ const App = (() => {
           <div class="headline">${narrative}</div>
           <div class="stats">
             <div class="exec-stat"><div class="num">${totalItems.toLocaleString()}</div><div class="lbl">Total Records</div></div>
+            ${styleCount > 0 ? `<div class="exec-stat"><div class="num">${styleCount}</div><div class="lbl">Bag Styles</div></div>` : ''}
             <div class="exec-stat"><div class="num">${vendors.size}</div><div class="lbl">Vendor Partners</div></div>
             <div class="exec-stat"><div class="num">${allColors.size}</div><div class="lbl">Unique Colors</div></div>
             <div class="exec-stat"><div class="num">${omMeters.toFixed(0)}m</div><div class="lbl">Outer Material Stock</div></div>
